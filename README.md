@@ -44,6 +44,9 @@ git clone https://github.com/your_github_username/supraTree.git
 This method automatically loads the plugin when Vim starts, similar to how `pathogen` works.
 
 ---
+## 📚 Dependencies
+install this too https://github.com/nda-cunh/SupraPopup
+
 
 ## 🛠️ Configuration
 
