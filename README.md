@@ -4,6 +4,8 @@
 
 SupraTree is a modern and high-performance Vim9Script plugin designed exclusively for **Vim9.0 and later**. Inspired by tools like Neovim's `vim-oil` and `nerdtree`, it provides a comprehensive and editable file explorer directly within your Vim environment.
 
+<img src="data_git/SupraWater.gif">
+
 ---
 
 ## ✨ Key Features
