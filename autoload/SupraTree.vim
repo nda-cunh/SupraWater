@@ -3,9 +3,6 @@ vim9script
 import autoload 'SupraWater.vim' as SupraWater
 var is_open = false
 
-# autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('t:SupraTree') | quit! | endif
-# autocmd BufLeave * if winnr('$') == 1 && SupraTreeExists() | call feedkeys(":quit!\<CR>:\<BS>") | endif
-
 def SupraTreeExists(): bool
 	var lst = tabpagebuflist()
 	for buf in lst

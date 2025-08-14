@@ -133,6 +133,7 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 		nnoremap <buffer><c-q>	<esc><scriptcmd>SupraTree.Close()<cr>
 		inoremap <buffer><c-q>	<esc><scriptcmd>SupraTree.Close()<cr>
 		command! -buffer Q call SupraTree.Close()
+		autocmd BufEnter <buffer> call ClosingTreeIfNeeded()
 	endif
 	cnoreabbrev <buffer> q Q
 
@@ -150,6 +151,17 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 	})
 	EnterWithPathAndJump()
 	return id
+enddef
+
+def ClosingTreeIfNeeded()
+	var lst_tab = tabpagebuflist()
+	var enrtab = tabpagenr('$')
+	if len(lst_tab) == 1
+		Utils.DestroyBuffer(bufnr('%'))
+	endif
+	if enrtab == 1
+		quit!
+	endif
 enddef
 
 export def ClosePopup(id: number)
@@ -411,6 +423,7 @@ def EnterWithPath(path: string, mode: string = '')
 				wincmd p
 			endif
 			execute 'edit! ' .. path
+			set wincolor=Normal
 		endif
 		silent! loadview
 	endif
@@ -509,9 +522,6 @@ def ForceQuit()
 	endif
 enddef
 
-
-# Check if il y a un doublon dans les noms de fichiers il peut pas y avoir 2
-# fois main.c et main.c parreil si il y a le fichier toto et toto/
 def CheckAndAddSigns(): bool
 	const id = bufnr('%')
 	var dict = local[id]
