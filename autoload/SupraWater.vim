@@ -143,12 +143,13 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 	autocmd TextChangedI,TextChanged <buffer> call Changed()
 	autocmd TextYankPost <buffer> if v:event.operator ==# 'd' && v:event.regname ==# '' | call Cut() | endif
 	autocmd TextYankPost <buffer> if v:event.operator ==# 'y' && v:event.regname ==# '' | call Yank() | endif
-	timer_start(0, (_) => {
+	# I Don't know why but IMAP BS dont work if is not in an autocmd
+	autocmd BufEnter <buffer> {
 		inoremap <buffer><Cr>			<scriptcmd>call SupraOverLoadCr()<cr>
-		inoremap <buffer><bs>			<scriptcmd>call SupraOverLoadBs()<cr>
 		inoremap <buffer><del>			<scriptcmd>call SupraOverLoadDel()<cr>
 		nnoremap <buffer><del>			<esc>i<del>
-	})
+		inoremap <buffer><bs>			<scriptcmd>call SupraOverLoadBs()<cr>
+	}
 	EnterWithPathAndJump()
 	return id
 enddef
@@ -158,9 +159,9 @@ def ClosingTreeIfNeeded()
 	var enrtab = tabpagenr('$')
 	if len(lst_tab) == 1
 		Utils.DestroyBuffer(bufnr('%'))
-	endif
-	if enrtab == 1
-		quit!
+		if enrtab == 1
+			silent! quit!
+		endif
 	endif
 enddef
 
@@ -813,6 +814,10 @@ def SupraOverLoadCr()
 enddef
 
 def SupraOverLoadDel()
+	if &filetype != 'suprawater'
+		feedkeys("\<del>", 'n')
+		return 
+	endif		
 	const col = col('.')
 	const line = line('.')
 	const end = strlen(getline('.'))
@@ -829,6 +834,10 @@ def SupraOverLoadDel()
 enddef
 
 def SupraOverLoadBs()
+	if &filetype != 'suprawater'
+		feedkeys("\<bs>", 'n')
+		return 
+	endif		
 	const col = col('.')
 	const line = line('.')
 	const end = strlen(getline('.'))

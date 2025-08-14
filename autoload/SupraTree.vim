@@ -22,7 +22,7 @@ export def OpenTree()
 	if exists('g:SupraTreeWinSize')
 		nb_size = g:SupraTreeWinSize
 	endif
-	execute 'topleft vertical :' .. nb_size .. 'split supra_water'
+	execute 'topleft vertical :' .. nb_size .. 'split .'
 	var wid = win_getid()
 	t:SupraTree = SupraWater.Water(true)
 	normal gg
