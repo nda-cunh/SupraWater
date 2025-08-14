@@ -3,8 +3,18 @@ vim9script
 import autoload 'SupraWater.vim' as SupraWater
 var is_open = false
 
-autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('t:SupraTree') | quit! | endif
-autocmd BufEnter * if winnr('$') == 1 && exists('t:SupraTree') | call feedkeys(":quit!\<CR>:\<BS>") | endif
+# autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('t:SupraTree') | quit! | endif
+# autocmd BufLeave * if winnr('$') == 1 && SupraTreeExists() | call feedkeys(":quit!\<CR>:\<BS>") | endif
+
+def SupraTreeExists(): bool
+	var lst = tabpagebuflist()
+	for buf in lst
+		if getbufvar(buf, '&filetype') == 'suprawater'
+			return true
+		endif
+	endfor
+	return false
+enddef
 
 export def OpenTree()
 	if exists('t:SupraTree')

@@ -119,7 +119,6 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 	nnoremap <buffer><tab>			<Nop>
 	nnoremap <buffer><a-up>			<Nop>
 	nnoremap <buffer><a-down>		<Nop>
-	inoremap <buffer><Cr>			<scriptcmd>call g:SupraOverLoadCr()<cr>
 	nnoremap <buffer><c-_>			<Nop>
 	nnoremap <buffer>dw				<scriptcmd>noautocmd normal! dw<cr>
 	nnoremap <buffer>db				<scriptcmd>noautocmd normal! db<cr>
@@ -143,6 +142,12 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 	autocmd TextChangedI,TextChanged <buffer> call Changed()
 	autocmd TextYankPost <buffer> if v:event.operator ==# 'd' && v:event.regname ==# '' | call Cut() | endif
 	autocmd TextYankPost <buffer> if v:event.operator ==# 'y' && v:event.regname ==# '' | call Yank() | endif
+	timer_start(0, (_) => {
+		inoremap <buffer><Cr>			<scriptcmd>call SupraOverLoadCr()<cr>
+		inoremap <buffer><bs>			<scriptcmd>call SupraOverLoadBs()<cr>
+		inoremap <buffer><del>			<scriptcmd>call SupraOverLoadDel()<cr>
+		nnoremap <buffer><del>			<esc>i<del>
+	})
 	EnterWithPathAndJump()
 	return id
 enddef
@@ -370,7 +375,7 @@ def EnterWithPath(path: string, mode: string = '')
 	const id = bufnr('%')
 	var dict = local[id]
 
-	var modified_files = GetModifiedFile(id)
+	const modified_files = GetModifiedFile(id)
 	if len(modified_files.rename) > 0 || len(modified_files.new_file) > 0
 		OpenPopupCancelFile(modified_files)
 		return
@@ -389,6 +394,7 @@ def EnterWithPath(path: string, mode: string = '')
 			redraw!
 		endif
 	else
+
 		if mode == 'horizontal'
 			wincmd p
 			execute 'split! ' .. path
@@ -398,17 +404,13 @@ def EnterWithPath(path: string, mode: string = '')
 			execute 'vsplit! ' .. path
 			set wincolor=Normal
 		elseif mode == 'tab'
-			if Quit() == true
-				execute 'tabnew! ' .. path
-				set wincolor=Normal
-			endif
+			execute 'tabnew! ' .. path
+			set wincolor=Normal
 		else
-			if Quit() == true
-				if dict.tree_mode == true
-					wincmd p
-				endif
-				execute 'edit! ' .. path
+			if dict.tree_mode == true
+				wincmd p
 			endif
+			execute 'edit! ' .. path
 		endif
 		silent! loadview
 	endif
@@ -466,8 +468,11 @@ enddef
 # If the buffer is modified
 # it will open a popup to confirm
 ##################################################
-def Quit(): bool
-	const id = bufnr('%')
+def Quit(force_id: number = -1): bool
+	var id = bufnr('%')
+	if force_id != -1
+		id = force_id
+	endif
 	const last_id = local[id].last_buffer
 	var dict = local[id]
 	const name = bufname(last_id)
@@ -487,29 +492,22 @@ def Quit(): bool
 		:b!#
 	endif
 	if bufexists(last_id) == 0
-		# echom 'Buffer ' .. last_id .. ' does not exist anymore.'
 		return false
 	endif
-	Utils.DestroyBuffer(id)
 	return true
 enddef
 
 def ForceQuit()
 	const id = bufnr('%')
 	var dict = local[id]
-	if dict.tree_mode == true
-		Utils.DestroyBuffer(id)
-		return
-	endif
 	if Quit() == false
 		return
 	endif
+	Utils.DestroyBuffer(id)
 	if isdirectory(bufname(dict.last_buffer)) == 1
 		quit!
 	endif
 enddef
-
-
 
 
 # Check if il y a un doublon dans les noms de fichiers il peut pas y avoir 2
@@ -789,7 +787,7 @@ enddef
 ##################################################
 # Overload the <cr> key to fix bug when pressing <cr> at the begin of the line
 ##################################################
-def g:SupraOverLoadCr()
+def SupraOverLoadCr()
 	const col = col('.')
 	const line = line('.')
 	const end = strlen(getline('.'))
@@ -802,6 +800,38 @@ def g:SupraOverLoadCr()
 		silent! normal o
 	endif
 	Actualize()
+enddef
+
+def SupraOverLoadDel()
+	const col = col('.')
+	const line = line('.')
+	const end = strlen(getline('.'))
+	echom 'col: ' .. col .. ' line: ' .. line .. ' end: ' .. end
+	var dict = local[bufnr('%')]
+	if col == 1 && end == 1
+		setline(line, dict.edit[line].name)
+		dict.edit[line].is_deleted = true
+		return
+	elseif col == end + 1 || end == 0
+	else
+		feedkeys("\<del>", 'n')
+	endif
+enddef
+
+def SupraOverLoadBs()
+	const col = col('.')
+	const line = line('.')
+	const end = strlen(getline('.'))
+	echom 'col: ' .. col .. ' line: ' .. line .. ' end: ' .. end
+	var dict = local[bufnr('%')]
+	if end == 1
+		setline(line, dict.edit[line].name)
+		dict.edit[line].is_deleted = true
+	elseif end == 0 || col == 1
+		return
+	else
+		feedkeys("\<bs>", 'n')
+	endif
 enddef
 
 def GetBeginEndYank(): list<number>
