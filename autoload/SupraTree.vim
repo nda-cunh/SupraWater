@@ -44,7 +44,7 @@ export def CloseTree()
 		return
 	endif
 	SupraWater.ClosePopup(t:SupraTree)
-	noautocmd execute 'bdelete! ' .. t:SupraTree
+	silent! noautocmd execute 'bdelete! ' .. t:SupraTree
 	unlet t:SupraTree
 enddef
 

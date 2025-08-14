@@ -13,7 +13,13 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 	const rd = rand() % 1000
 	const id = bufadd('/tmp/suprawater' .. rd .. '.water')
 	const last_buffer = bufnr()
-	const actual_path = expand('%:p:h')
+	var actual_path: string
+
+	if tree_mode == true
+		actual_path = getcwd()
+	else
+		actual_path = expand('%:p:h')
+	endif
 
 	silent! mkview
 	var file_name = expand("%:t")
@@ -513,13 +519,24 @@ enddef
 
 def ForceQuit()
 	const id = bufnr('%')
+	if has_key(local, id) == 0
+		return
+	endif
 	var dict = local[id]
 	if Quit() == false
 		return
 	endif
 	Utils.DestroyBuffer(id)
 	if isdirectory(bufname(dict.last_buffer)) == 1
-		quit!
+		if dict.tree_mode == true
+			silent! SupraTree.Close()
+		else
+			silent! quit!
+		endif
+	endif
+	const l = bufnr('%')
+	if bufname(l) =~# '/tmp/suprawater\d\+\.water'
+		ForceQuit()
 	endif
 enddef
 
