@@ -54,11 +54,14 @@ Vous pouvez personnaliser le comportement de SupraTree dans votre fichier de con
 
 ### Options disponibles
 
-* `g:SupraTreeIgnoreTree` : Liste de motifs (regex) pour ignorer certains fichiers ou dossiers dans l'arborescence.
-    * **Exemple** : `let g:SupraTreeIgnoreTree = ['\.png$', '\.jpg$', '\.o$']`
-
-* `g:SupraTreeWinSize` : Largeur de la fenêtre de l'explorateur (en colonnes).
-    * **Exemple** : `let g:SupraTreeWinSize = 27`
+* `g:SupraTreeIgnoreTree`: Une liste de motifs (regex) pour ignorer des fichiers ou dossiers spécifiques dans l'arborescence.
+	**Exemple**: `g:SupraTreeIgnoreTree = ['\.png$', '\.jpg$', '\.o$']`
+* `g:SupraTreeWinSize`: La largeur de la fenêtre de l'explorateur en colonnes. Par défaut, c'est `26`.
+* `g:SupraTreeSymbolSigns`: Un symbole utilisés en cas d'erreur dans l'arborescence. Par défaut, c'est `✖`.
+* `g:SupraTreeForceColor`: Forcer un thème de couleur spécifique pour l'arborescence.
+* `g:SupraTreeDarkenAmount`: Le niveau d'assombrissement de la couleur de fond de la fenêtre de l'arborescence. Par défaut, c'est `15` (%).
+* `g:SupraTreeShowHidden`: Afficher les fichiers et dossiers cachés (par défaut, c'est `false`).
+* `g:SupraTreeSortAscending`: Trier les fichiers et dossiers par ordre croissant (par défaut, c'est `true`).
 
 ---
 
@@ -81,5 +84,7 @@ SupraTree fournit plusieurs commandes pour interagir avec l'explorateur de fichi
 * `<C-v>` : Ouvrir le fichier/dossier en split vertical.
 * `<C-t>` : Ouvrir le fichier/dossier dans un nouvel onglet.
 * `<C-p>` : Prévisualiser le fichier.
+* `<C-.>`: Basculer la visibilité des fichiers et dossiers cachés.
+* `<C-=>`: Basculer le tri croissant/décroissant.
 * `~` : Aller dans le dossier personnel.
 * `_` : Entrer dans le dossier et sauter à la dernière position.

@@ -54,11 +54,14 @@ You can customize SupraTree's behavior by setting these options in your Vim conf
 
 ### Available Options
 
-* `g:SupraTreeIgnoreTree`: A list of patterns (regex) to ignore specific files or folders in the tree.
-    * **Example**: `let g:SupraTreeIgnoreTree = ['\.png$', '\.jpg$', '\.o$']`
-
-* `g:SupraTreeWinSize`: The width of the explorer window in columns.
-    * **Example**: `let g:SupraTreeWinSize = 27`
+* `g:SupraTreeIgnoreTree`: A list of patterns (regex) to ignore specific files or folders in the tree. like
+	**Example**: g:SupraTreeIgnoreTree = ['\.png$\', '\.jpg$', '\.o$']
+* `g:SupraTreeWinSize`: The width of the explorer window in columns. default is `26`.
+* `g:SupraTreeSymbolSigns`: A string to define the symbols used when error occurs in the tree. default is `✖`.
+* `g:SupraTreeForceColor`: Force A specific color scheme for the tree.
+* `g:SupraTreeDarkenAmount`: The amount to darken the background color of the tree window. Default is `15` (%).
+* `g:SupraTreeShowHidden`: Whether to show hidden files and directories (default is `false`).
+* `g:SupraTreeSortAscending`: Sort files and directories in ascending order (default is `true`).
 
 ---
 
@@ -81,5 +84,7 @@ SupraTree provides several commands to interact with the file explorer. You can 
 * `<C-v>`: Open the file/folder in a vertical split.
 * `<C-t>`: Open the file/folder in a new tab.
 * `<C-p>`: Preview the file.
+* `<C-.>`: Toggle hidden files.
+* `<C-=>`: Toggle the sorting order of files and directories.
 * `~`: Go to the home directory.
 * `_`: Enter the folder and jump to the last position.

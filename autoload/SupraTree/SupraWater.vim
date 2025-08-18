@@ -24,14 +24,24 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 		return id
 	endif
 
+	var sort_ascending = true
+	var show_hidden = false
+
+	if exists('g:SupraTreeSortAscending')
+		sort_ascending = g:SupraTreeSortAscending
+	endif
+	if exists('g:SupraTreeShowHidden')
+		show_hidden = g:SupraTreeShowHidden
+	endif
+
 	var dict = {
 		first_path: actual_path,
 		first_filename: file_name,
 		actual_path: actual_path,
 		cursor_pos: {},
 		last_buffer: last_buffer,
-		show_hidden: false,
-		sort_ascending: true,
+		show_hidden: show_hidden,
+		sort_ascending: sort_ascending,
 		edit: {},
 		clipboard: [],
 		clipboard_mode: 'yank',
