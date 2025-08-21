@@ -1,4 +1,4 @@
-vim9script
+vim9script noclear
 
 import autoload 'SupraPopup.vim' as Popup
 import autoload './SupraTree.vim' as SupraTree
@@ -1187,6 +1187,9 @@ def Actualize(force_id: number = -1)
 	var id = bufnr('%')
 	if force_id != -1
 		id = force_id
+	endif
+	if has_key(local, id) == 0
+		return
 	endif
 	var dict = local[id]
 	const actual_path = dict.actual_path

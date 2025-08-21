@@ -1,4 +1,4 @@
-vim9script
+vim9script noclear
 
 import autoload './SupraWater.vim' as SupraWater
 var is_open = false
