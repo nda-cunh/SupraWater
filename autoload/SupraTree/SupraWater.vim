@@ -211,6 +211,7 @@ def ClosingTreeIfNeeded()
 enddef
 
 export def ClosePopup(id: number)
+
 	var dict = GetDict(id)
 	if has_key(dict, 'popup_clipboard') == 0
 		return
@@ -219,6 +220,7 @@ export def ClosePopup(id: number)
 enddef
 
 def RefreshTree(id: number)
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -370,6 +372,7 @@ enddef
 ###############################################
 def Back()
 	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -420,6 +423,7 @@ enddef
 #######################################################
 def EnterFolder(mode: string = '')
 	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -451,6 +455,7 @@ enddef
 #################################################
 def EnterWithPath(path: string, mode: string = '')
 	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -506,6 +511,7 @@ enddef
 #################################################
 def EnterWithPathAndJump()
 	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -589,6 +595,7 @@ enddef
 
 def ForceQuit()
 	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -604,6 +611,7 @@ enddef
 
 def CheckAndAddSigns(): bool
 	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return false
@@ -676,6 +684,7 @@ enddef
 
 def PopupYes(modified_file: dict<any>)
 	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -759,6 +768,7 @@ enddef
 
 def OpenPopupCancelFile(modified_file: dict<any>)
 	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -799,6 +809,7 @@ enddef
 def OpenPopupModifiedfile(modified_file: dict<any>)
 	const width = float2nr(&columns * 0.6)
 	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -841,6 +852,7 @@ def OpenPopupModifiedfile(modified_file: dict<any>)
 enddef
 
 def GetModifiedFile(id: number): dict<any>
+
 	var dict = GetDict(id)
 	if dict == {}
 		return {}
@@ -913,6 +925,8 @@ def SupraOverLoadDel()
 	const col = col('.')
 	const line = line('.')
 	const end = strlen(getline('.'))
+	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -935,6 +949,8 @@ def SupraOverLoadBs()
 	const col = col('.')
 	const line = line('.')
 	const end = strlen(getline('.'))
+	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -979,6 +995,7 @@ enddef
 
 def Paste()
 	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -1033,6 +1050,7 @@ enddef
 
 def Yank()
 	const id = bufnr('%')
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -1063,7 +1081,7 @@ enddef
 
 def Cut()
 	const id = bufnr('%')
-	
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -1253,6 +1271,7 @@ def Actualize(force_id: number = -1)
 	if force_id != -1
 		id = force_id
 	endif
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
