@@ -74,6 +74,19 @@ SupraTree fournit plusieurs commandes pour interagir avec l'explorateur de fichi
 * `:SupraTreeToggle` : Ouvre ou ferme la fenêtre de l'arborescence.
 * `:SupraTreeOpen` : Ouvre l'explorateur de fichiers.
 * `:SupraTreeClose` : Ferme l'explorateur de fichiers.
+* `:SupraTreeRefresh` : actualise l'arborescence des fichier.
+
+### AutoCommand
+
+Vous pouvez lier cette commande automatique :
+
+Pour appeler une commande, utilisez :
+```vim
+do autocmd User RefreshTree
+```
+
+**RefreshTree** Si vous appelez cette commande, tout supraTree sera actualisé.
+    (Par exemple, pour le lier vers un serveur qui vérifie si des fichiers ont été modifiés, tel que supravim-server.)
 
 ### Raccourcis clavier (dans la fenêtre de l'arborescence)
 

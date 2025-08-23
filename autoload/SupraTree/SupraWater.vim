@@ -227,14 +227,10 @@ def RefreshTree(id: number)
 	# Do not Refresh if modification is in progress
 	var modified_files = GetModifiedFile(id)
 	if len(modified_files.rename) > 0 || len(modified_files.new_file) > 0 || len(modified_files.deleted) > 0 || len(modified_files.all_copy) > 0
-		return
-	endif
-	# If the buffer is not SupraWater, we don't need to refresh the tree
-	if dict.tree_mode == false
+		Actualize(id)
 		return
 	endif
 
-	# If the buffer is SupraWater, we need to refresh the tree
 	if dict.actual_path != ''
 		DrawPath(dict.actual_path, id)
 	else
@@ -814,17 +810,17 @@ def OpenPopupModifiedfile(modified_file: dict<any>)
 		if keys ==? 'y'
 			Popup.Close(popup)
 			var current = getline('.')
-			call PopupYes(modified_file)
+			PopupYes(modified_file)
 			DrawPath(dict.actual_path)
-			Actualize()
 			search(current, 'c')
+			Actualize()
 		endif
 		if keys ==? 'c'
 			dict.clipboard = []
 			var pos = getpos('.')
 			DrawPath(dict.actual_path)
-			Actualize()
 			setpos('.', pos)
+			Actualize()
 			Popup.Close(popup)
 		endif
 		return Popup.BLOCK
@@ -909,11 +905,11 @@ def SupraOverLoadDel()
 	if &filetype != 'suprawater'
 		feedkeys("\<del>", 'n')
 		return 
-	endif		
+	endif
 	const col = col('.')
 	const line = line('.')
 	const end = strlen(getline('.'))
-	var dict = GetDict(id)
+	var dict = GetDict()
 	if dict == {}
 		return
 	endif
@@ -935,7 +931,7 @@ def SupraOverLoadBs()
 	const col = col('.')
 	const line = line('.')
 	const end = strlen(getline('.'))
-	var dict = GetDict(id)
+	var dict = GetDict()
 	if dict == {}
 		return
 	endif
@@ -979,7 +975,7 @@ enddef
 
 def Paste()
 	const id = bufnr('%')
-	var dict = GetDict(id)
+	var dict = GetDict()
 	if dict == {}
 		return
 	endif

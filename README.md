@@ -74,6 +74,19 @@ SupraTree provides several commands to interact with the file explorer. You can 
 * `:SupraTreeToggle`: Toggles the file tree window (opens if closed, closes if open).
 * `:SupraTreeOpen`: Opens the file explorer.
 * `:SupraTreeClose`: Closes the file explorer.
+* `:SupraTreeRefresh`: Refreshes the file tree to reflect any changes in the filesystem.
+
+### AutoCommand
+
+You can bind this autocommand:
+
+for calling an autocommand use:
+```vim
+do autocmd User RefreshTree
+```
+
+**RefreshTree** if you call this all supraTree will refresh.
+	(For example, for the link to a server that checks whether files have been modified, such as supravim-server.)
 
 ### Key Bindings (within the tree window)
 

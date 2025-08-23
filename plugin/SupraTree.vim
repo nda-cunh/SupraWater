@@ -6,6 +6,7 @@ import autoload 'SupraTree/SupraWater.vim' as SupraWater
 command! SupraTreeToggle call SupraTree.Toggle()
 command! SupraTreeOpen call SupraTree.OpenTree()
 command! SupraTreeClose call SupraTree.Close()
+command! SupraTreeRefresh call SupraWater.Refresh()
 
 augroup SupraWater
 	autocmd!
