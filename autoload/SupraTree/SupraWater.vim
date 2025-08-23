@@ -10,19 +10,19 @@ export var local: dict<any> = {}
 
 # Function to create a new SupraWater buffer
 export def Water(tree_mode: bool = false, force_id: number = -1): number
+	if exists('b:SupraTreeDict')
+		return b:SupraTreeDict.id
+	endif
+
 	const rd = rand() % 1000
 	const id = bufadd('/tmp/suprawater' .. rd .. '.water')
 	const last_buffer = bufnr()
 	var actual_path = expand('%:p:h')
 
-	silent! mkview
 	var file_name = expand("%:t")
 	execute "b! " .. id
 	set wincolor=NormalDark
 
-	if has_key(local, id) == 1
-		return id
-	endif
 
 	var sort_ascending = true
 	var show_hidden = false
@@ -82,8 +82,7 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 		hidden: 1,
 		mapping: true,
 	})
-	local[id] = dict
-	b:supra_dict = dict
+	b:SupraTreeDict = dict
 
 	set filetype=suprawater
 	setlocal fillchars+=eob:\ 
@@ -192,6 +191,14 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 	return id
 enddef
 
+export def GetDict(id: number = -1): dict<any>
+	if id == -1
+		return get(b:, 'SupraTreeDict', {})
+	else
+		return getbufvar(id, 'SupraTreeDict', {})
+	endif
+enddef
+
 def ClosingTreeIfNeeded()
 	var lst_tab = tabpagebuflist()
 	var enrtab = tabpagenr('$')
@@ -204,7 +211,7 @@ def ClosingTreeIfNeeded()
 enddef
 
 export def ClosePopup(id: number)
-	var dict = local[id]
+	var dict = GetDict(id)
 	if has_key(dict, 'popup_clipboard') == 0
 		return
 	endif
@@ -212,10 +219,10 @@ export def ClosePopup(id: number)
 enddef
 
 def RefreshTree(id: number)
-	if has_key(local, id) == 0
+	var dict = GetDict(id)
+	if dict == {}
 		return
 	endif
-	var dict = local[id]
 
 	# Do not Refresh if modification is in progress
 	var modified_files = GetModifiedFile(id)
@@ -245,14 +252,19 @@ export def Refresh()
 enddef
 
 ####################################
-# Draw the 'ls' command and load it in local.edit
+# Draw the 'ls' command and load it in b:SupraTreeDict.edit
 ####################################
 export def DrawPath(path: string, force_id: number = -1)
 	var id = bufnr('%')
 	if force_id != -1
 		id = force_id
 	endif
-	var dict = local[id]
+
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
+
 	const r1 = getreg('1')
 	const r2 = getreg('2')
 	const r3 = getreg('3')
@@ -358,7 +370,10 @@ enddef
 ###############################################
 def Back()
 	const id = bufnr('%')
-	var dict = local[id]
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
 
 	# Do not quit if the buffer is modified
 	const modified_files = GetModifiedFile(id)
@@ -405,7 +420,10 @@ enddef
 #######################################################
 def EnterFolder(mode: string = '')
 	const id = bufnr('%')
-	var dict = local[id]
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
 
 	var line = getline('.')
 	# check if line is only space
@@ -433,7 +451,10 @@ enddef
 #################################################
 def EnterWithPath(path: string, mode: string = '')
 	const id = bufnr('%')
-	var dict = local[id]
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
 
 	const modified_files = GetModifiedFile(id)
 	if len(modified_files.rename) > 0 || len(modified_files.new_file) > 0
@@ -477,7 +498,6 @@ def EnterWithPath(path: string, mode: string = '')
 			execute 'edit! ' .. path
 			set wincolor=Normal
 		endif
-		silent! loadview
 	endif
 enddef
 
@@ -486,7 +506,10 @@ enddef
 #################################################
 def EnterWithPathAndJump()
 	const id = bufnr('%')
-	const dict = local[id]
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
 
 	var jump: string = dict.first_path
 	# if the end is not a slash, add it
@@ -537,8 +560,11 @@ def Quit(force_id: number = -1): bool
 	if force_id != -1
 		id = force_id
 	endif
-	const last_id = local[id].last_buffer
-	var dict = local[id]
+	var dict = GetDict(id)
+	if dict == {}
+		return false
+	endif
+	const last_id = dict.last_buffer
 	const name = bufname(last_id)
 
 	# Do not quit if the buffer is modified
@@ -548,7 +574,7 @@ def Quit(force_id: number = -1): bool
 		return false
 	endif
 
-	Popup.Close(local[id].popup_clipboard)
+	Popup.Close(dict.popup_clipboard)
 	if dict.tree_mode == true
 		return true
 	endif
@@ -563,10 +589,10 @@ enddef
 
 def ForceQuit()
 	const id = bufnr('%')
-	if has_key(local, id) == 0
+	var dict = GetDict(id)
+	if dict == {}
 		return
 	endif
-	var dict = local[id]
 	if Quit() == false
 		return
 	endif
@@ -578,7 +604,10 @@ enddef
 
 def CheckAndAddSigns(): bool
 	const id = bufnr('%')
-	var dict = local[id]
+	var dict = GetDict(id)
+	if dict == {}
+		return false
+	endif
 
 	var lines = getbufline(id, 2, '$')
 	var all_lines: list<string> = []
@@ -647,7 +676,11 @@ enddef
 
 def PopupYes(modified_file: dict<any>)
 	const id = bufnr('%')
-	var dict = local[id]
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
+
 	const actual_path = dict.actual_path
 
 	var commands = []
@@ -726,7 +759,10 @@ enddef
 
 def OpenPopupCancelFile(modified_file: dict<any>)
 	const id = bufnr('%')
-	var dict = local[id]
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
 	const width = float2nr(&columns * 0.4)
 
 	var popup = Popup.Simple({
@@ -763,7 +799,10 @@ enddef
 def OpenPopupModifiedfile(modified_file: dict<any>)
 	const width = float2nr(&columns * 0.6)
 	const id = bufnr('%')
-	var dict = local[id]
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
 	var popup = Popup.Simple({
 		close_key: ["q", "n", "\<esc>"],
 		scrollbar: 1,
@@ -802,7 +841,10 @@ def OpenPopupModifiedfile(modified_file: dict<any>)
 enddef
 
 def GetModifiedFile(id: number): dict<any>
-	var dict = local[id]
+	var dict = GetDict(id)
+	if dict == {}
+		return {}
+	endif
 
 	var all_deleted: list<string> = []
 	var all_new_file: list<string> = []
@@ -871,7 +913,10 @@ def SupraOverLoadDel()
 	const col = col('.')
 	const line = line('.')
 	const end = strlen(getline('.'))
-	var dict = local[bufnr('%')]
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
 	if col == 1 && end == 1
 		setline(line, dict.edit[line].name)
 		dict.edit[line].is_deleted = true
@@ -890,7 +935,10 @@ def SupraOverLoadBs()
 	const col = col('.')
 	const line = line('.')
 	const end = strlen(getline('.'))
-	var dict = local[bufnr('%')]
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
 	if end == 1
 		setline(line, dict.edit[line].name)
 		dict.edit[line].is_deleted = true
@@ -931,7 +979,10 @@ enddef
 
 def Paste()
 	const id = bufnr('%')
-	var dict = local[id]
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
 
 	var pos = getpos('.')
 	if len(dict.clipboard) == 0
@@ -982,7 +1033,11 @@ enddef
 
 def Yank()
 	const id = bufnr('%')
-	var dict = local[id]
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
+
 	const pos = getpos('.')
 	Popup.SetTitle(dict.popup_clipboard, '📋 Clipboard (Yank)')
 
@@ -1008,7 +1063,12 @@ enddef
 
 def Cut()
 	const id = bufnr('%')
-	var dict = local[id]
+	
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
+
 	const pos = getpos('.')
 	Popup.SetTitle(dict.popup_clipboard, '📋 Clipboard (Delete)')
 
@@ -1096,7 +1156,12 @@ enddef
 #######################################################################
 def Changed()
 	const id = bufnr('%')
-	var dict = local[id]
+
+	var dict = GetDict(id)
+	if dict == {}
+		return
+	endif
+
 	const nb_lines = line('$') - 1
 
 	# ../ is a special case
@@ -1188,10 +1253,10 @@ def Actualize(force_id: number = -1)
 	if force_id != -1
 		id = force_id
 	endif
-	if has_key(local, id) == 0
+	var dict = GetDict(id)
+	if dict == {}
 		return
 	endif
-	var dict = local[id]
 	const actual_path = dict.actual_path
 	var winid = win_findbuf(id)[0]
 

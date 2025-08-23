@@ -36,7 +36,7 @@ enddef
 # Simple popup to preview a file.
 export def Preview()
 	const id = bufnr('%')
-	const dict = Water.local[id]
+	const dict = Water.GetDict(id)
 	const line = getline('.')
 
 	var file_path = dict.actual_path .. line
