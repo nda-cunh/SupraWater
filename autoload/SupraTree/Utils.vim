@@ -10,7 +10,7 @@ export def GetIcon(name: string, type: number = -1): string
 enddef
 
 export def GetStrPopup(modified_file: dict<any>): list<string>
-	var lines: list<string> = [] 
+	var lines: list<string> = []
 	for i in modified_file.rename
 		var sp = split(i, ' -> ')
 		var str1 = sp[0]
@@ -43,7 +43,7 @@ export def GetStrPopup(modified_file: dict<any>): list<string>
 			add(lines, '[Copy File]    ' .. GetIcon(str1) .. ' ' .. str1 .. '  →  ' .. GetIcon(str2) .. ' ' .. str2)
 		endif
 	endfor
-	return lines 
+	return lines
 enddef
 
 export def CancelMoveOneLine()
@@ -62,7 +62,7 @@ enddef
 
 
 export def LeftPath(str: string): string
-	var path = str 
+	var path = str
 	if len(path) > 1
 		path = fnamemodify(path[0 : -2], ':h')
 	endif
@@ -93,21 +93,21 @@ endfunction
 
 
 export def ToggleHidden()
-	if !exists('b:supra_dict')
-		echom 'No supradict found in buffer'
+	var dict = SupraWater.GetDict()
+	if dict == {}
 		return
 	endif
-	var dict = b:supra_dict 
+
 	dict.show_hidden = !dict.show_hidden
 	SupraWater.DrawPath(dict.actual_path)
 enddef
 
 export def ToggleSort()
-	if !exists('b:supra_dict')
-		echom 'No supradict found in buffer'
+	var dict = SupraWater.GetDict()
+	if dict == {}
 		return
 	endif
-	var dict = b:supra_dict 
+
 	dict.sort_ascending = !dict.sort_ascending
 	SupraWater.DrawPath(dict.actual_path)
 enddef
@@ -136,7 +136,7 @@ enddef
 
 export def SimpleSortDescending(a: string, b: string): number
 	if stridx(a, '.') == 0 && stridx(b, '.') != 0
-		return 1 
+		return 1
 	else
 		return Ft_strcmp(b, a)
 	endif

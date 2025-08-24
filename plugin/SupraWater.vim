@@ -7,10 +7,15 @@ nnoremap - <scriptcmd>call SupraWater.Water()<CR>
 
 var local: dict<any> = {}
 
-autocmd VimEnter,BufEnter * if isdirectory(@%) | execute 'SupraWater.Water()' | endif
+
+augroup SupraWaterAutoCmd
+	autocmd! 
+	autocmd VimEnter,BufEnter * if isdirectory(@%) | execute 'SupraWater.Water()' | endif
+	autocmd WinScrolled,VimResized * call SupraWater.Actualize_all()
+	autocmd ColorScheme * call Create_HiColor()
+augroup END
 
 highlight link SupraWaterSign Error
-autocmd ColorScheme * call Create_HiColor()
 highlight link SupraWaterErrorSign Error
 if exists('g:SupraTreeSymbolSigns')
 	execute 'sign define SupraWaterSign text=' .. g:SupraTreeSymbolSigns .. ' texthl=SupraWaterErrorSign'

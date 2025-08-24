@@ -73,7 +73,7 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 	dict.popup_clipboard = Popup.Simple({
 		close_key: [],
 		col: col,
-		line: line, 
+		line: line,
 		pos: 'topright',
 		width: popup_width,
 		height: popup_height,
@@ -103,7 +103,7 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 		setbufvar(id, '&ea', 0)
 		setbufvar(id, '&relativenumber', 0)
 		setbufvar(id, '&winfixwidth', 1)
-		setbufvar(id, '&cursorline', 0)
+		setbufvar(id, '&cursorline', 1)
 		setbufvar(id, '&winminwidth', 10)
 	endif
 
@@ -157,18 +157,14 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 	endif
 	cnoreabbrev <buffer> q Q
 
-	autocmd ModeChanged,CursorMovedI,CursorMoved,WinScrolled <buffer> call Actualize()
+	autocmd ModeChanged,CursorMovedI,CursorMoved <buffer> call Actualize()
 	autocmd CursorMoved,CursorMovedI <buffer> call Utils.CancelMoveOneLine()
+	autocmd CmdlineChanged <buffer> if getcmdtype() == '/' |  Actualize_After() | endif
 	autocmd BufWritePost <buffer> call WaterSaveBuffer()
 	autocmd TextChangedI,TextChanged <buffer> call Changed()
 	autocmd TextYankPost <buffer> if v:event.operator ==# 'd' && v:event.regname ==# '' | call Cut() | endif
 	autocmd TextYankPost <buffer> if v:event.operator ==# 'y' && v:event.regname ==# '' | call Yank() | endif
-	if &filetype == 'suprawater'
-		inoremap <buffer><Cr>			<scriptcmd>call SupraOverLoadCr()<cr>
-		inoremap <buffer><del>			<scriptcmd>call SupraOverLoadDel()<cr>
-		nnoremap <buffer><del>			<esc>i<del>
-		inoremap <buffer><bs>			<scriptcmd>call SupraOverLoadBs()<cr>
-	endif
+
 	# I Don't know why but IMAP BS dont work if is not in an autocmd
 	if &filetype == 'suprawater'
 		inoremap <buffer><Cr>			<scriptcmd>call SupraOverLoadCr()<cr>
@@ -176,6 +172,7 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 		nnoremap <buffer><del>			<esc>i<del>
 		inoremap <buffer><bs>			<scriptcmd>call SupraOverLoadBs()<cr>
 	endif
+
 	autocmd BufEnter <buffer> {
 		if &filetype == 'suprawater'
 			inoremap <buffer><Cr>			<scriptcmd>call SupraOverLoadCr()<cr>
@@ -189,6 +186,12 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 
 	EnterWithPathAndJump()
 	return id
+enddef
+
+def Actualize_After()
+	timer_start(0, (_) => {
+		Actualize()
+	})
 enddef
 
 export def GetDict(id: number = -1): dict<any>
@@ -238,10 +241,19 @@ def RefreshTree(id: number)
 	endif
 enddef
 
+export def Actualize_all()
+	var lst_buf = tabpagebuflist()
+	for i in lst_buf
+		if getbufvar(i, '&filetype') == 'suprawater'
+			Actualize(i)
+		endif
+	endfor
+enddef
+
 export def Refresh()
 	var lst_buf = tabpagebuflist()
 	for i in lst_buf
-		if getbufvar(i, '&filetype') == 'suprawater' 
+		if getbufvar(i, '&filetype') == 'suprawater'
 			RefreshTree(i)
 		endif
 	endfor
@@ -904,7 +916,7 @@ enddef
 def SupraOverLoadDel()
 	if &filetype != 'suprawater'
 		feedkeys("\<del>", 'n')
-		return 
+		return
 	endif
 	const col = col('.')
 	const line = line('.')
@@ -926,8 +938,8 @@ enddef
 def SupraOverLoadBs()
 	if &filetype != 'suprawater'
 		feedkeys("\<bs>", 'n')
-		return 
-	endif		
+		return
+	endif
 	const col = col('.')
 	const line = line('.')
 	const end = strlen(getline('.'))
@@ -1059,7 +1071,7 @@ enddef
 
 def Cut()
 	const id = bufnr('%')
-	
+
 	var dict = GetDict(id)
 	if dict == {}
 		return
@@ -1270,8 +1282,8 @@ def Actualize(force_id: number = -1)
 
 	const help_text = 'Press ("?" or "h") for Help !'
 	sort_text ..= repeat(' ', (winwidth(winid) - len(sort_text) - len(help_text))) ..  help_text
-	prop_clear(1, line('$', winid))
-	if dict.tree_mode == true 
+	prop_clear(1, line('$w', winid), {bufnr: id})
+	if dict.tree_mode == true
 		var get_width_window = winwidth(winid)
 		const txt_title = '󰥨 SupraTree'
 		const center_len = (get_width_window - len(txt_title)) / 2
@@ -1294,7 +1306,7 @@ def Actualize(force_id: number = -1)
 	for line in lines
 		prop_add(1, 0, {bufnr: id, text: line, type: 'suprawaterpath', text_align: 'above'})
 	endfor
-	if dict.tree_mode == false 
+	if dict.tree_mode == false
 		prop_add(1, 0, {bufnr: id, text: sort_text, type: 'suprawatersort', text_align: 'above'})
 	endif
 	const result = getbufline(id, 1, '$')
