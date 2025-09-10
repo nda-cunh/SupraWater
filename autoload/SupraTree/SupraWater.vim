@@ -204,12 +204,12 @@ enddef
 
 def ClosingTreeIfNeeded()
 	var lst_tab = tabpagebuflist()
-	var enrtab = tabpagenr('$')
 	if len(lst_tab) == 1
-		Utils.DestroyBuffer(bufnr('%'))
-		if enrtab == 1
-			silent! quit!
-		endif
+		var buf = bufnr('%')
+		timer_start(0, (_) => {
+			Utils.DestroyBuffer(buf)
+		})
+		silent! quit!
 	endif
 enddef
 
