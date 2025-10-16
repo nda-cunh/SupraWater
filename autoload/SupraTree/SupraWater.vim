@@ -135,8 +135,8 @@ export def Water(tree_mode: bool = false, force_id: number = -1): number
 	nnoremap <buffer><tab>			<Nop>
 	nnoremap <buffer><a-up>			<Nop>
 	nnoremap <buffer><a-down>		<Nop>
-	nnoremap <buffer><Esc>O3~		<scriptcmd>Utils.ToggleHidden()<cr>
-	inoremap <buffer><Esc>O3~		<scriptcmd>Utils.ToggleHidden()<cr>
+	nnoremap <buffer><c-h>			<scriptcmd>Utils.ToggleHidden()<cr>
+	inoremap <buffer><c-h>			<scriptcmd>Utils.ToggleHidden()<cr>
 	nnoremap <buffer>=				<scriptcmd>Utils.ToggleSort()<cr>
 	inoremap <buffer>=				<scriptcmd>Utils.ToggleSort()<cr>
 	nnoremap <buffer><c-_>			<Nop>
