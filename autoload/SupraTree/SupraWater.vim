@@ -627,21 +627,15 @@ def CheckAndAddSigns(): bool
 	exe "sign unplace 2 buffer=" .. id
 	for _line in lines
 		var line = substitute(_line, '/\+$', '', 'g')
-		if index(all_lines, line) != -1
+		# Check if the line is a duplicate or skip if the line is empty
+		if index(all_lines, line) != -1 && !(_line =~? '^\s*$')
 			exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
 			var txt = 'Duplicate'
 			prop_add(i, 0, {text: txt, type: 'suprawatersigns', text_align: 'after', text_padding_left: 3})
 			error = true
 		endif
 
-		if dict.edit[i].new_file == true
-			if (_line =~? '^\s*$')
-				exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
-				var txt = 'New file with only spaces.'
-				prop_add(i, 0, {text: txt, type: 'suprawatersigns', text_align: 'after', text_padding_left: 3})
-				error = true
-			endif
-		elseif dict.edit[i].copy_of == ''
+		if dict.edit[i].copy_of == ''
 			if dict.edit[i].name[-1] == '/' && _line[-1] != '/'
 				exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
 				var txt = 'You cannot rename a folder to a file.'
