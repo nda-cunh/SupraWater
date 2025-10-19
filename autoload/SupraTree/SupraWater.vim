@@ -626,50 +626,35 @@ def CheckAndAddSigns(): bool
 	var i = 2
 	exe "sign unplace 2 buffer=" .. id
 	for _line in lines
-		var line = substitute(_line, '/\+$', '', 'g')
-		# Check if the line is a duplicate or skip if the line is empty
-		if index(all_lines, line) != -1 && !(_line =~? '^\s*$')
+		const line = _line
+		var add_line = substitute(_line, '/\+$', '', 'g')
+
+		if index(all_lines, add_line) != -1 && !(_line =~? '^\s*$')
 			exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
 			var txt = 'Duplicate'
 			prop_add(i, 0, {text: txt, type: 'suprawatersigns', text_align: 'after', text_padding_left: 3})
 			error = true
 		endif
 
-		if dict.edit[i].copy_of == ''
-			if dict.edit[i].name[-1] == '/' && _line[-1] != '/'
-				exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
-				var txt = 'You cannot rename a folder to a file.'
-				prop_add(i, 0, {text: txt, type: 'suprawatersigns', text_align: 'after', text_padding_left: 3})
-				error = true
-			endif
-
-			if dict.edit[i].name[-1] != '/' && _line[-1] == '/'
-				exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
-				var txt = 'You cannot rename a file to a folder'
-				prop_add(i, 0, {text: txt, type: 'suprawatersigns', text_align: 'after', text_padding_left: 3})
-				error = true
-			endif
-		else
-			if dict.edit[i].copy_of[-1] == '/' && _line[-1] != '/'
-				exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
-				var txt = 'You cannot copy a folder to a file'
-				prop_add(i, 0, {text: txt, type: 'suprawatersigns', text_align: 'after', text_padding_left: 3})
-				error = true
-			endif
-
-			if dict.edit[i].copy_of[-1] != '/' && _line[-1] == '/'
-				exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
-				var txt = 'You cannot copy a file to a folder.'
-				prop_add(i, 0, {text: txt, type: 'suprawatersigns', text_align: 'after', text_padding_left: 3})
-				error = true
+		if dict.edit[i].new_file == false
+			if dict.edit[i].copy_of == ''
+				if line[-1] == '/' && dict.edit[i].name[-1] != '/'
+					exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
+					var txt = 'Should be a file'
+					prop_add(i, 0, {text: txt, type: 'suprawatersigns', text_align: 'after', text_padding_left: 3})
+					error = true
+				elseif line[-1] != '/' && dict.edit[i].name[-1] == '/'
+					exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
+					var txt = 'Should be a folder'
+					prop_add(i, 0, {text: txt, type: 'suprawatersigns', text_align: 'after', text_padding_left: 3})
+					error = true
+				endif
 			endif
 		endif
 
-
-
 		i = i + 1
 		if dict.edit[i - 1].is_deleted == false
-			add(all_lines, line)
+			add(all_lines, add_line)
 		endif
 	endfor
 	return error
