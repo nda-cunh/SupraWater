@@ -1265,7 +1265,10 @@ def Actualize(force_id: number = -1)
 	if dict.tree_mode == true
 		var get_width_window = winwidth(winid)
 		const txt_title = '󰥨 SupraTree'
-		const center_len = (get_width_window - len(txt_title)) / 2
+		var center_len = (get_width_window - len(txt_title)) / 2
+		if center_len < 0
+			center_len = 0
+		endif
 		prop_add(1, 0, {bufnr: id, text: txt_title, type: 'suprawaterpath', text_align: 'above', text_padding_left: center_len})
 	endif
 	var draw_path = substitute(actual_path, '^' .. $HOME, '~', 'g')
