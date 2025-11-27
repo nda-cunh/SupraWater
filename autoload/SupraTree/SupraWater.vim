@@ -502,6 +502,9 @@ def EnterWithPath(path: string, mode: string = '')
 		else
 			if dict.tree_mode == true
 				wincmd p
+				if &modified == true
+					execute 'split'
+				endif
 			endif
 			execute 'edit! ' .. path
 			set wincolor=Normal
