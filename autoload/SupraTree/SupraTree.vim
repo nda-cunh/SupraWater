@@ -24,8 +24,9 @@ export def OpenTree()
 		nb_size = g:SupraTreeWinSize
 	endif
 	const file_name = expand('%:p:t')
-	execute 'topleft vertical :' .. nb_size .. 'split _supra_water_magik_'
+	noautocmd execute 'noautocmd topleft vertical :' .. nb_size .. 'split _supra_water_magik_'
 	const buf = bufnr('%')
+	setbufvar(buf, '&buflisted', 0)
 	const wid = win_getid()
 	t:SupraTree = SupraWater.Water(true)
 	silent! noautocmd execute 'bdelete! ' .. buf
