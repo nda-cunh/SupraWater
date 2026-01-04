@@ -1,26 +1,28 @@
 vim9script
 
 export def GetCustomFileList(path: string): list<string>
-	var filter_pattern: string 
+	var patterns = []
 
-	# Create the combined filter pattern for the best performance
+	# Fitler hidden files
 	if get(g:, 'suprawater_showhidden', false) == false
-		filter_pattern = '\%(^\.'
-	else
-		filter_pattern = '\%('
+		add(patterns, '^\.')
 	endif
-	if exists('g:suprawater_filter_files') && len(g:suprawater_filter_files) > 0
-		if filter_pattern == '\%(^\.'
-			filter_pattern ..= '\|'
-		endif
-		filter_pattern = filter_pattern .. g:suprawater_filter_files
+
+	# Add custom filter files
+	if exists('g:suprawater_filter_files') && !empty(g:suprawater_filter_files)
+		var custom_filters = g:suprawater_filter_files
 			->mapnew((_, val) => glob2regpat(val))
-			->join('\|')
+		extend(patterns, custom_filters)
 	endif
-	filter_pattern ..= '\)'
+
+	var filter_pattern: string
+	if !empty(patterns)
+		filter_pattern = '\%(' .. join(patterns, '\|') .. '\)'
+	else
+		filter_pattern = ''
+	endif
 
 	const entries = readdirex(path, (n) => (filter_pattern == '' || n.name !~ filter_pattern), {sort: 'none'})
-
 
 	var folder: list<string> = []
 	var files: list<string> = []

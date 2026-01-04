@@ -1,14 +1,15 @@
 vim9script
 
-# 
 import autoload './PopupSave.vim' as NPopupSave
 import autoload './Utils.vim' as Utils
 import autoload './Colors.vim' as Colors
 import autoload './Read.vim' as Read 
 import autoload './ClipBoard.vim' as NClipBoard
+import autoload './UndoStack.vim' as NUndoStack
 
 type PopupSave = NPopupSave.PopupSave
 type ClipBoard = NClipBoard.ClipBoard
+type UndoStack = NUndoStack.UndoStack
 
 export def Water()
 	var view = WaterView.new()
@@ -28,13 +29,15 @@ class WaterView
 	var first_path: string
 	var first_filename: string
 	var path: string
-	var undostack: list<dict<any>>
 	var cursor_pos: dict<list<number>>
 	var open_from_directory: bool = false
 	var clipboard: ClipBoard
 	static var index: number = 0
+	# var undostack: list<dict<any>>
+	var undostack: UndoStack
 
 	def new()
+		this.undostack = UndoStack.new()
 		this.clipboard = ClipBoard.new()
 		this.previous_buf = bufnr('%')
 		this.first_path = expand('%:p:h')
@@ -92,10 +95,11 @@ class WaterView
 		nnoremap <buffer>~			<scriptcmd>b:SupraWaterInstance.GoToHome()<cr>
 		nnoremap <buffer>_			<scriptcmd>b:SupraWaterInstance.GoToFirstPath()<cr>
 
-		nnoremap <buffer>=			<scriptcmd>Utils.ToggleAscendingSort()<cr>
+		nnoremap <buffer>=			<scriptcmd>b:SupraWaterInstance.ToggleAscendingSort()<cr>
+		nnoremap <buffer>g.		<scriptcmd>b:SupraWaterInstance.ToggleShowHiddenFiles()<cr>
+		nnoremap <buffer>u			<scriptcmd>b:SupraWaterInstance.Undo()<cr>
+		nnoremap <buffer><c-r>		<scriptcmd>b:SupraWaterInstance.Redo()<cr>
 
-
-		# nnoremap <buffer><c-h>		<scriptcmd>Utils.ToggleShowHiddenFiles()<cr>
 
 		nnoremap <buffer>dw			<scriptcmd>noautocmd normal! dw<cr>
 		nnoremap <buffer>db			<scriptcmd>noautocmd normal! db<cr>
@@ -120,6 +124,9 @@ class WaterView
 
 		this.DrawPath(this.first_path)
 		this.JumpToFile(this.first_filename)
+		this.undostack.InitPosition()
+		this.undostack.Save(this.buf)
+
 	enddef
 
 	### It's for fix the bug when the buffer is not saved when closing
@@ -153,7 +160,6 @@ class WaterView
 		this.path = Utils.LeftPath(this.path)
 
 		this.DrawPath(this.path)
-
 		this.JumpToFile(jump)
 	enddef
 
@@ -167,11 +173,9 @@ class WaterView
 		# Check if the buffer is modified
 		# WARNING Do not use it anymore
 		# if getbufvar(this.buf, '&modified') == true
-			# echom "Please save or discard changes before quitting."
 			# return
 		# endif
 
-		echom this.first_path .. '/' .. this.first_filename
 		# Quit if suprawater is open from a directory
 		if this.open_from_directory == true
 			quit!
@@ -190,7 +194,7 @@ class WaterView
 		noautocmd setbufline(this.buf, 1, [' ', '../'] + lst)
 		noautocmd deletebufline(this.buf, len(lst) + 3, '$')  # delete all lines in the buffer
 		setbufvar(this.buf, '&modified', 0)
-		this.undostack = []
+		this.undostack.Clear()
 		var edit: dict<any> = {}
 		var nb = 3
 		for i in lst
@@ -203,7 +207,8 @@ class WaterView
 			edit[nb] = tmp
 			nb += 1
 		endfor
-		add(this.undostack, edit)
+		# add(this.undostack, edit)
+		this.undostack.Add(edit, getbufline(this.buf, 1, '$'))
 		this.Actualize()
 	enddef
 
@@ -249,7 +254,7 @@ class WaterView
 		endfor
 		prop_add(1, 0, {bufnr: buf, text: sort_text, type: 'suprawatersort', text_align: 'above'})
 
-		var edit = this.undostack[-1]
+		var edit = this.undostack.Get()
 		###############################
 		# Icons printing
 		###############################
@@ -291,6 +296,25 @@ class WaterView
 		setbufvar(buf, '&modified', 0)
 	enddef
 
+	def Undo()
+		# If an edit is in progress, Add it to the undostack
+		# Compare getbufline with the undostack last edit
+		# const current_lines = getbufline(this.buf, 1, '$')
+		# const last_edit = this.undostack.GetContents()
+# 
+		# if current_lines != last_edit
+			# var edit = this.undostack.Get()
+			# this.undostack.Add(edit, current_lines)
+		# endif
+
+		this.undostack.Undo(this.buf)
+		this.Actualize()
+	enddef
+
+	def Redo()
+		this.undostack.Redo(this.buf)
+		this.Actualize()
+	enddef
 
 	###############################################
 	## Save/Writing the buffer
@@ -317,7 +341,7 @@ class WaterView
 		var all_copy: list<string> = []
 		var bufs = getbufline(id, 1, '$')
 
-		var edit = this.undostack[-1]
+		var edit = this.undostack.Get()
 
 		for i in keys(edit)
 			if edit[i].is_deleted == true
@@ -360,7 +384,6 @@ class WaterView
 		popup.OnYes(() => {
 			var current = getline('.')
 			popup.ProcessModification(modified_file, this.clipboard, this.path)
-			echom "Changes saved."
 			this.DrawPath(this.path)
 			search(current, 'c')
 			this.Actualize()
@@ -395,7 +418,6 @@ class WaterView
 			if type == SIMPLE
 				this.DrawPath(path[0 : -2])
 				# Jump to the cursor_pos of the new folder path if exists
-				echom this.path
 				if has_key(this.cursor_pos, this.path)
 					call setpos('.', this.cursor_pos[this.path])
 					normal! zz
@@ -422,17 +444,37 @@ class WaterView
 		endif
 	enddef
 
+	def ToggleAscendingSort()
+		if !exists('g:suprawater_sortascending')
+			g:suprawater_sortascending = true
+		endif
+		var value: bool = g:suprawater_sortascending
+		g:suprawater_sortascending = !value
+		this.DrawPath(this.path)
+	enddef
+
+	def ToggleShowHiddenFiles()
+		if !exists('g:suprawater_showhidden')
+			g:suprawater_showhidden = false
+		endif
+		var value: bool = g:suprawater_showhidden
+		g:suprawater_showhidden = !value
+		this.DrawPath(this.path)
+	enddef
+
+
 	############################################
 	## Typing Events
 	############################################
 
 	# Like Alt+Up/Down switch the edit line with the line above/below
 	def SwitchUp()
-		var edit = this.undostack[-1]
 		const current_line = line('.')
 		if current_line <= 3
 			return
 		endif
+		this.undostack.Save(this.buf)
+		var edit = this.undostack.Get()
 
 		var temp = edit[current_line]
 		edit[current_line] = edit[current_line - 1]
@@ -443,18 +485,17 @@ class WaterView
 		noautocmd setbufline(this.buf, current_line, line_above)
 		noautocmd setbufline(this.buf, current_line - 1, line_content)
 
-		echom "Add UNDO"
-		add(this.undostack, copy(edit))
 		this.Actualize()
 		normal! k
 	enddef
 
 	def SwitchDown()
-		var edit = this.undostack[-1]
 		const current_line = line('.')
 		if current_line >= line('$')
 			return
 		endif
+		this.undostack.Save(this.buf)
+		var edit = this.undostack.Get()
 
 		var temp = edit[current_line]
 		edit[current_line] = edit[current_line + 1]
@@ -465,8 +506,6 @@ class WaterView
 		noautocmd setbufline(this.buf, current_line, line_below)
 		noautocmd setbufline(this.buf, current_line + 1, line_content)
 
-		echom "Add UNDO"
-		add(this.undostack, copy(edit))
 		this.Actualize()
 		normal! j
 	enddef
@@ -497,7 +536,7 @@ class WaterView
 		const line = line('.')
 		const end = strlen(getline('.'))
 
-		var edit = this.undostack[-1]
+		var edit = this.undostack.Get()
 		if col == 1 && end == 1
 			setline(line, edit[line].name)
 			edit[line].is_deleted = true
@@ -512,7 +551,7 @@ class WaterView
 		const col = col('.')
 		const line = line('.')
 		const end = strlen(getline('.'))
-		var edit = this.undostack[-1]
+		var edit = this.undostack.Get()
 		if end == 1
 			setline(line, edit[line].name)
 			edit[line].is_deleted = true
@@ -528,13 +567,16 @@ class WaterView
 	## Clipboard Operations
 	###########################
 	def Paste()
-		const id = bufnr('%')
+		const id = this.buf
 		var pos = getpos('.')
 
 		if this.clipboard.IsEmpty()
 			return
 		endif
-		var edit = copy(this.undostack[-1])
+		# var edit = this.undostack.Get()
+		# noautocmd this.undostack.Add(edit, getbufline(this.buf, 1, '$'))
+		this.undostack.Save(id)
+		var edit = this.undostack.Get()
 		var nb_len = this.clipboard.Len()
 
 		for i in range(len(edit) + 1, pos[1] + 1, -1)
@@ -575,16 +617,12 @@ class WaterView
 			i = i + 1
 		endwhile
 		noautocmd setbufline(id, 1, new_lines)
-		echom "Add UNDO"
-		add(this.undostack, edit)
 	enddef
 
 
 
 	def Yank()
 		const pos = getpos('.')
-		# TODO
-		# Popup.SetTitle(dict.popup_clipboard, '📋 Clipboard (Yank)')
 
 		var [ln, count] = Utils.GetBeginEndYank()
 		if ln == -1 || count == -1
@@ -598,7 +636,7 @@ class WaterView
 		
 		this.clipboard.SetYank()
 
-		var edit = this.undostack[-1]
+		var edit = this.undostack.Get()
 
 		for i in range(ln, ln + count - 1)
 			# Special case for ../
@@ -617,6 +655,8 @@ class WaterView
 	def Cut()
 		var modified = getbufvar(this.buf, '&modified')
 		const pos = getpos('.')
+		# this.undostack.Add(this.undostack.Get(), getbufline(this.buf, 1, '$'))
+		this.undostack.Save(this.buf)
 		# TODO
 		# Popup.SetTitle(dict.popup_clipboard, '📋 Clipboard (Delete)')
 
@@ -631,7 +671,7 @@ class WaterView
 		endif
 
 		this.clipboard.SetCut()
-		var edit = this.undostack[-1]
+		var edit = this.undostack.Get()
 		var remove_line: list<number> = []
 		for i in range(ln, ln + count - 1)
 			# Special case for ../
@@ -669,7 +709,6 @@ class WaterView
 		endfor
 
 		timer_start(10, (_) => {
-			set eventignore=
 			noautocmd setbufline(this.buf, 1, new_buffer)
 			setpos('.', pos)
 			this.Actualize()
@@ -686,7 +725,7 @@ class WaterView
 	def Changed()
 		const buf = this.buf
 		const nb_lines = line('$') - 1
-		var edit = copy(this.undostack[-1])
+		var edit = this.undostack.Get()
 
 		# ../ is a special case
 		noautocmd setline(2, '../')
@@ -725,8 +764,9 @@ class WaterView
 				edit[i + 1] = edit[i]
 			endfor
 			edit[current] = new_file
-			echom 'Add UNDO' .. len(this.undostack)
-			add(this.undostack, edit)
+			# add(this.undostack, edit)
+			this.undostack.Add(edit, getbufline(buf, 1, '$'))
+			this.Actualize()
 			return
 		endif
 
@@ -767,7 +807,6 @@ class WaterView
 		if line('.') == 1
 			normal! j
 		endif
-		this.undostack[-1] = edit
 		this.Actualize()
 	enddef
 endclass

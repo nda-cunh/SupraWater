@@ -56,19 +56,6 @@ export def IsBinary(path: string): bool
 	return match(readfile(path, '', 10), '\%x00') != -1
 enddef
 
-def Ft_strcmp(str1: string, str2: string): number
-	var diff = 0
-	for i in range(0, min([len(str1), len(str2)]) - 1)
-		var char1 = char2nr(str1[i])
-		var char2 = char2nr(str2[i])
-		if char1 != char2
-			diff = char1 - char2
-			break
-		endif
-	endfor
-	return diff
-enddef
-
 export def GetBeginEndYank(): list<number>
 	var ln = line('.')
 	var count: number
