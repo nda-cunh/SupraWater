@@ -1,10 +1,10 @@
 vim9script noclear
 
-if exists('g:SupraTreeLoaded')
+if exists('g:SupraWaterLoaded')
 	finish
 endif
 
-g:SupraTreeLoaded = 1
+g:SupraWaterLoaded = 1
 
 ################################
 ## Import Modules
@@ -37,8 +37,8 @@ augroup END
 ## Define Signs
 ###############################
 
-if exists('g:SupraTreeSymbolSigns')
-	execute 'sign define SupraWaterSign text=' .. g:SupraTreeSymbolSigns .. ' texthl=SupraWaterErrorSign'
+if exists('g:SupraWaterSymbolSigns')
+	execute 'sign define SupraWaterSign text=' .. g:SupraWaterSymbolSigns .. ' texthl=SupraWaterErrorSign'
 else
 	execute 'sign define SupraWaterSign text=✖ texthl=SupraWaterErrorSign'
 endif

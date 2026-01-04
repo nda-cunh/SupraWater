@@ -174,12 +174,6 @@ class WaterView
 
 	def Quit()
 
-		# Check if the buffer is modified
-		# WARNING Do not use it anymore
-		# if getbufvar(this.buf, '&modified') == true
-			# return
-		# endif
-
 		# Quit if suprawater is open from a directory
 		if this.open_from_directory == true
 			quit!

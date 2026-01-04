@@ -1,103 +1,69 @@
-# SupraTree: A Powerful File Manager for Vim9.0+
+# 🌊 SupraWater
 
-<img src="data_git/readme.png">
+SupraWater is an interactive file explorer for Vim 9.1, written in Vim9script.
+It provides an experience similar to nvim-oil, but natively for Vim.
 
-SupraTree is a modern and high-performance Vim9Script plugin designed exclusively for **Vim9.0 and later**. Inspired by tools like Neovim's `vim-oil` and `nerdtree`, it provides a comprehensive and editable file explorer directly within your Vim environment.
+![SupraWater](data_git/SupraWater.gif)
 
-<img src="data_git/SupraWater.gif">
+## ✨ Features
 
----
+- 📁 File system navigation
+- ✍️ Direct editing of paths/files
+- 🪟 Open in split / vsplit / tab
+- 👁️ File preview
+- ↩️ Undo / Redo actions
+- 📋 Copy / Paste
+- 🏠 Quick access to $HOME
+- 🔍 Show hidden files
+- 🔃 Ascending / descending sort
+- 🎨 Icon support (vim-devicons or SupraIcons)
+- 🧠 Built-in help popup
 
-## ✨ Key Features
+## ⚙️ Requirements
 
-* **Powerful File Explorer**: Easily navigate, open, and manage your file tree.
-* **Seamless Integration**: Built specifically for the Vim9 engine, ensuring speed and stability.
-* **Editable Tree**: Rename files and folders directly from the explorer view.
-* **Customizable**: Easily configure the display and key bindings to suit your workflow.
+- Vim 9.1
+- (Optional) SupraIcons or vim-devicons
 
----
+## ⌨️ Keybindings
 
-## 🚀 Installation
+### Opening
 
-To install SupraTree, you can use a Vim9 plugin manager like `vim-plug` or `dein.vim`, or a simple file-based manager like `supraload` or `pathogen`.
+- **Enter / Double click**: Open
+- **Ctrl-t**: New tab
+- **Ctrl-h**: Horizontal split
+- **Ctrl-v**: Vertical split
+- **Ctrl-p**: Preview
 
-### Using `vim-plug`
+### Navigation / Quit
 
-Add the following line to your `.vimrc` or `init.vim` file:
+- **q / Ctrl-q**: Quit
+- **Backspace / -**: Parent directory
+- **Alt-Up / Alt-Down**: Move item
+- **~**: HOME
+- **_**: First path
 
-`vim
-Plug 'your_github_username/supraTree'
-`
+### Editing
 
-Then, restart Vim and run `:PlugInstall`.
+- **Ctrl-s**: Save
+- **p**: Paste
+- **dw / db**: Delete word
+- **yw / yb**: Copy word
+- **u**: Undo
+- **Ctrl-r**: Redo
 
-### Using `supraload` (or `pathogen`)
+### Options
 
-1.  Navigate to your Vim plugins directory. For `supraload`, this would be `~/.vim/bundle/` (or similar, depending on your setup).
-2.  Clone the repository directly into this directory:
+- **=**: Toggle sort order
+- **g.**: Toggle hidden files
+- **?**: Help
 
-`bash
-cd ~/.vim/bundle/
-git clone https://github.com/your_github_username/supraTree.git
-`
+## 🔧 Configuration
 
-This method automatically loads the plugin when Vim starts, similar to how `pathogen` works.
-
----
-## 📚 Dependencies
-install this too https://github.com/nda-cunh/SupraPopup
-
-
-## 🛠️ Configuration
-
-You can customize SupraTree's behavior by setting these options in your Vim configuration file.
-
-### Available Options
-
-* `g:SupraTreeIgnoreTree`: A list of patterns (regex) to ignore specific files or folders in the tree. like
-	**Example**: g:SupraTreeIgnoreTree = ['\.png$\', '\.jpg$', '\.o$']
-* `g:SupraTreeWinSize`: The width of the explorer window in columns. default is `26`.
-* `g:SupraTreeSymbolSigns`: A string to define the symbols used when error occurs in the tree. default is `✖`.
-* `g:SupraTreeForceColor`: Force A specific color scheme for the tree.
-* `g:SupraTreeDarkenAmount`: The amount to darken the background color of the tree window. Default is `15` (%).
-* `g:SupraTreeShowHidden`: Whether to show hidden files and directories (default is `false`).
-* `g:SupraTreeSortAscending`: Sort files and directories in ascending order (default is `true`).
-
----
-
-## ⌨️ Commands and Key Bindings
-
-SupraTree provides several commands to interact with the file explorer. You can map these to your preferred key bindings.
-
-### Commands
-
-* `:SupraTreeToggle`: Toggles the file tree window (opens if closed, closes if open).
-* `:SupraTreeOpen`: Opens the file explorer.
-* `:SupraTreeClose`: Closes the file explorer.
-* `:SupraTreeRefresh`: Refreshes the file tree to reflect any changes in the filesystem.
-
-### AutoCommand
-
-You can bind this autocommand:
-
-for calling an autocommand use:
-```vim
-do autocmd User RefreshTree
-```
-
-**RefreshTree** if you call this all supraTree will refresh.
-	(For example, for the link to a server that checks whether files have been modified, such as supravim-server.)
-
-### Key Bindings (within the tree window)
-
-* `<C-q>`: Quit the explorer.
-* `<BackSpace>` / `-`: Go back to the parent directory.
-* `<Enter>` / `<Click>`: Enter the folder or open the selected file.
-* `<C-h>`: Open the file/folder in a horizontal split.
-* `<C-v>`: Open the file/folder in a vertical split.
-* `<C-t>`: Open the file/folder in a new tab.
-* `<C-p>`: Preview the file.
-* `<C-.>`: Toggle hidden files.
-* `<C-=>`: Toggle the sorting order of files and directories.
-* `~`: Go to the home directory.
-* `_`: Enter the folder and jump to the last position.
+| Variable | Default | Description |
+| -------- | ------- | ----------- |
+| g:suprawater_icons_glyph_func | 'g:WebDevIconsGetFileTypeSymbol' | Function used to get icons |
+| g:suprawater_filter_files | [] | List of files to filter ['*.o', '*.tmp'] |
+| g:suprawater_sortascending | true | Sort ascending by default |
+| g:suprawater_show_hidden | true | Show hidden files by default |
+| g:SupraWaterForceColor | '' | Force a specific color (e.g. '#RRGGBB') |
+| g:SupraWaterDarkenAmount | 25 | Background darkening percentage |
