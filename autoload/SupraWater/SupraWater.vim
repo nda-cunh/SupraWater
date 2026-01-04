@@ -136,6 +136,7 @@ class WaterView
 	### It's for fix the bug when the buffer is not saved when closing
 	def Hide()
 		setbufvar(this.buf, '&modified', 0)
+		this.clipboard.Clear()
 	enddef
 
 	def GoToHome()
@@ -296,16 +297,6 @@ class WaterView
 	enddef
 
 	def Undo()
-		# If an edit is in progress, Add it to the undostack
-		# Compare getbufline with the undostack last edit
-		# const current_lines = getbufline(this.buf, 1, '$')
-		# const last_edit = this.undostack.GetContents()
-# 
-		# if current_lines != last_edit
-			# var edit = this.undostack.Get()
-			# this.undostack.Add(edit, current_lines)
-		# endif
-
 		this.undostack.Undo(this.buf)
 		this.Actualize()
 	enddef
@@ -322,6 +313,10 @@ class WaterView
 	def SaveBuffer()
 		var modified_file = this.GetModifiedFile()
 
+		if this.CheckAndAddSigns() == true
+			return
+		endif
+
 		if len(modified_file.rename) == 0 && len(modified_file.deleted) == 0 && len(modified_file.new_file) == 0 && len(modified_file.all_copy) == 0
 			echohl WarningMsg
 			echo "[SupraWater] No changes to save."
@@ -330,6 +325,51 @@ class WaterView
 		endif
 
 		this.OpenPopupModifiedfile(modified_file)
+	enddef
+
+	def CheckAndAddSigns(): bool
+		const id = this.buf
+		var lines = getbufline(id, 2, '$')
+		var all_lines: list<string> = []
+		var edit = this.undostack.Get()
+
+		this.Actualize()
+		var error = false
+		var i = 2
+		exe "sign unplace 2 buffer=" .. id
+		for _line in lines
+			const line = _line
+			var add_line = substitute(_line, '/\+$', '', 'g')
+
+			if index(all_lines, add_line) != -1 && !(_line =~? '^\s*$')
+				exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
+				var txt = 'Duplicate'
+				prop_add(i, 0, {text: txt, type: 'suprawatersigns', text_align: 'after', text_padding_left: 3})
+				error = true
+			endif
+
+			if edit[i].new_file == false
+				if edit[i].copy_of == ''
+					if line[-1] == '/' && edit[i].name[-1] != '/'
+						exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
+						var txt = 'Should be a file'
+						prop_add(i, 0, {text: txt, type: 'suprawatersigns', text_align: 'after', text_padding_left: 3})
+						error = true
+					elseif line[-1] != '/' && edit[i].name[-1] == '/'
+						exe "sign place 2 line=" .. i .. " name=SupraWaterSign"
+						var txt = 'Should be a folder'
+						prop_add(i, 0, {text: txt, type: 'suprawatersigns', text_align: 'after', text_padding_left: 3})
+						error = true
+					endif
+				endif
+			endif
+
+			i = i + 1
+			if edit[i - 1].is_deleted == false
+				add(all_lines, add_line)
+			endif
+		endfor
+		return error
 	enddef
 
 	def GetModifiedFile(): ModifiedFiles 
