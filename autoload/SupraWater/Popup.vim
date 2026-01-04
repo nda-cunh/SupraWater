@@ -11,9 +11,10 @@ export abstract class Popup
 			highlight: 'Normal',
 			padding: [0, 1, 0, 1],
 			mapping: 0,
+			filter: this.Filter,
 		}
 
-		extend(options_base, options, 'keep')
+		extend(options_base, options, 'force')
 
 		this.wid = popup_create([], options_base)
 		const bufnr = winbufnr(this.wid)
@@ -34,5 +35,13 @@ export abstract class Popup
 
 	def Close()
 		popup_close(this.wid)
+		this.wid = 0
+	enddef
+
+	def Filter(wid: number, key: string): number
+		if key ==? 'q' || key == "\<Esc>"
+			this.Close()
+		endif
+		return 0
 	enddef
 endclass

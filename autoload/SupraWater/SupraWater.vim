@@ -1,6 +1,7 @@
 vim9script
 
 import autoload './PopupSave.vim' as NPopupSave
+import autoload './PopupHelp.vim' as NPopupHelp
 import autoload './PopupPreview.vim' as NPopupPreview
 import autoload './Utils.vim' as Utils
 import autoload './Colors.vim' as Colors
@@ -10,6 +11,7 @@ import autoload './UndoStack.vim' as NUndoStack
 
 type PopupSave = NPopupSave.PopupSave
 type PopupPreview = NPopupPreview.PopupPreview
+type PopupHelp = NPopupHelp.PopupHelp
 type ClipBoard = NClipBoard.ClipBoard
 type UndoStack = NUndoStack.UndoStack
 
@@ -26,6 +28,7 @@ type TypeOpen = number
 type ModifiedFiles = dict<list<string>> 
 
 class WaterView
+	static var index: number = 0
 	var buf: number
 	var previous_buf: number
 	var first_path: string
@@ -34,8 +37,6 @@ class WaterView
 	var cursor_pos: dict<list<number>>
 	var open_from_directory: bool = false
 	var clipboard: ClipBoard
-	static var index: number = 0
-	# var undostack: list<dict<any>>
 	var undostack: UndoStack
 
 	def new()
@@ -96,9 +97,10 @@ class WaterView
 		inoremap <buffer><c-s>		<scriptcmd>b:SupraWaterInstance.SaveBuffer()<cr>
 		nnoremap <buffer>~			<scriptcmd>b:SupraWaterInstance.GoToHome()<cr>
 		nnoremap <buffer>_			<scriptcmd>b:SupraWaterInstance.GoToFirstPath()<cr>
+		nnoremap <buffer>?			<scriptcmd>b:SupraWaterInstance.HelpPopup()<cr>
 
 		nnoremap <buffer>=			<scriptcmd>b:SupraWaterInstance.ToggleAscendingSort()<cr>
-		nnoremap <buffer>g.		<scriptcmd>b:SupraWaterInstance.ToggleShowHiddenFiles()<cr>
+		nnoremap <buffer>g.			<scriptcmd>b:SupraWaterInstance.ToggleShowHiddenFiles()<cr>
 		nnoremap <buffer>u			<scriptcmd>b:SupraWaterInstance.Undo()<cr>
 		nnoremap <buffer><c-r>		<scriptcmd>b:SupraWaterInstance.Redo()<cr>
 		nnoremap <buffer><c-p>		<scriptcmd>b:SupraWaterInstance.Preview()<cr>
@@ -129,7 +131,6 @@ class WaterView
 		this.JumpToFile(this.first_filename)
 		this.undostack.InitPosition()
 		this.undostack.Save(this.buf)
-
 	enddef
 
 	### It's for fix the bug when the buffer is not saved when closing
@@ -189,6 +190,7 @@ class WaterView
         else
             execute 'enew!'
         endif
+		this.clipboard.Clear()
     enddef
 
 	def DrawPath(path: string)
@@ -418,6 +420,9 @@ class WaterView
 		var line = getline('.')
 		if line[-1] == '/'
 			const path: string = this.path .. '/' .. line
+			if type != SIMPLE
+				this.clipboard.Clear()
+			endif
 			if type == SIMPLE
 				this.DrawPath(path[0 : -2])
 				# Jump to the cursor_pos of the new folder path if exists
@@ -433,6 +438,7 @@ class WaterView
 				execute 'tabnew! ' .. path
 			endif
 		else
+			this.clipboard.Clear()
 			if type == TABNEW
 				# Close the current buffer
 				this.Quit()
@@ -463,6 +469,11 @@ class WaterView
 		var value: bool = g:suprawater_showhidden
 		g:suprawater_showhidden = !value
 		this.DrawPath(this.path)
+	enddef
+
+
+	def HelpPopup()
+		PopupHelp.new()
 	enddef
 
 	def Preview()
@@ -771,8 +782,7 @@ class WaterView
 				edit[i + 1] = edit[i]
 			endfor
 			edit[current] = new_file
-			# add(this.undostack, edit)
-			this.undostack.Add(edit, getbufline(buf, 1, '$'))
+			this.undostack.Save(buf)
 			this.Actualize()
 			return
 		endif
