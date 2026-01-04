@@ -1,6 +1,7 @@
 vim9script
 
 import autoload './PopupSave.vim' as NPopupSave
+import autoload './PopupPreview.vim' as NPopupPreview
 import autoload './Utils.vim' as Utils
 import autoload './Colors.vim' as Colors
 import autoload './Read.vim' as Read 
@@ -8,6 +9,7 @@ import autoload './ClipBoard.vim' as NClipBoard
 import autoload './UndoStack.vim' as NUndoStack
 
 type PopupSave = NPopupSave.PopupSave
+type PopupPreview = NPopupPreview.PopupPreview
 type ClipBoard = NClipBoard.ClipBoard
 type UndoStack = NUndoStack.UndoStack
 
@@ -99,6 +101,7 @@ class WaterView
 		nnoremap <buffer>g.		<scriptcmd>b:SupraWaterInstance.ToggleShowHiddenFiles()<cr>
 		nnoremap <buffer>u			<scriptcmd>b:SupraWaterInstance.Undo()<cr>
 		nnoremap <buffer><c-r>		<scriptcmd>b:SupraWaterInstance.Redo()<cr>
+		nnoremap <buffer><c-p>		<scriptcmd>b:SupraWaterInstance.Preview()<cr>
 
 
 		nnoremap <buffer>dw			<scriptcmd>noautocmd normal! dw<cr>
@@ -460,6 +463,10 @@ class WaterView
 		var value: bool = g:suprawater_showhidden
 		g:suprawater_showhidden = !value
 		this.DrawPath(this.path)
+	enddef
+
+	def Preview()
+		PopupPreview.new(this.path .. '/' .. getline('.'))
 	enddef
 
 
