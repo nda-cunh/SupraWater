@@ -5,7 +5,7 @@ export def Create_HiColor()
 	var fgcolor = synIDattr(synIDtrans(hlID('Normal')), 'fg')
 	var darkened_bg: string
 
-	if exists('g:SupraWaterForceColor')
+	if exists('g:SupraWaterForceColor') && g:SupraWaterForceColor != ''
 		darkened_bg = g:SupraWaterForceColor
 	else
 		if bgcolor == '' || fgcolor == ''
