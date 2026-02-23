@@ -24,8 +24,13 @@ export abstract class Popup
 
 	def AddColorPalette()
 		if exists('g:suprawater_icons_glyph_palette_func')
-			var func_call = $'{g:suprawater_icons_glyph_palette_func}()'
-			win_execute(this.wid, $':call {func_call}')
+			var func_name = g:suprawater_icons_glyph_palette_func
+			
+			if exists($'*{func_name}')
+				win_execute(this.wid, $':call {func_name}()')
+			else
+				echo 'Warning: Function ' .. func_name .. ' does not exist. Color palette will not be added.'
+			endif
 		endif
 	enddef
 

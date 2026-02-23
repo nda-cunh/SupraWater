@@ -1,10 +1,28 @@
 vim9script
 
 export def GetIcon(name: string, type: number = -1): string
-	if name[-1] == '/'
-		return g:WebDevIconsGetFileTypeSymbol(name, 1)
+    var FuncName = get(g:, 'suprawater_icons_glyph_func', '')
+
+    if !empty(FuncName) && exists($'*{FuncName}')
+        var is_dir = (name[-1] == '/') ? 1 : type
+        
+        return call(FuncName, [name, is_dir])
+    endif
+    return FakeIcon(name, type)
+enddef
+
+# just return the uppercase first letter of the file extension as a placeholder icon
+def FakeIcon(name: string, type: number): string
+	if type == 1
+		return 'D'
+	else
+		const ext = fnamemodify(name, ':e')
+		if ext == ''
+			return toupper(fnamemodify(name, ':t')[0])
+		else
+			return toupper(ext[0])
+		endif
 	endif
-	return g:WebDevIconsGetFileTypeSymbol(name, type)
 enddef
 
 export def GetStrPopup(modified_file: dict<list<string>>): list<string>
