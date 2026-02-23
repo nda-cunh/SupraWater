@@ -1,3 +1,7 @@
+if !exists('g:loaded_airline')
+  finish
+endif
+
 function! airline#extensions#suprawater#apply_active(...) abort
 	if (&ft ==# 'suprawater') && a:2.active ==# '1'
 		call airline#extensions#suprawater#configure_sections(a:1, a:2)
