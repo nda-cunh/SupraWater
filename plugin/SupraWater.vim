@@ -10,10 +10,10 @@ g:SupraWaterLoaded = 1
 ## Import Modules
 ################################
 
-import autoload 'SupraWater/SupraWater.vim' as SupraWater
-import autoload 'SupraWater/Colors.vim' as Colors
-import autoload 'SupraWater/FileManager.vim' as FileManager
-import autoload 'SupraWater/DarkenColor.vim' as Darken
+import autoload '../autoload/SupraWater/SupraWater.vim' as SupraWater
+import autoload '../autoload/SupraWater/Colors.vim' as Colors
+import autoload '../autoload/SupraWater/FileManager.vim' as FileManager
+import autoload '../autoload/SupraWater/DarkenColor.vim' as Darken
 
 g:suprawater_icons_glyph_func = 'g:WebDevIconsGetFileTypeSymbol'
 g:suprawater_icons_glyph_palette_func = 'SupraIcons#Palette#Apply'
