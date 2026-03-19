@@ -29,7 +29,7 @@ hi link SupraWaterErrorSign Error
 
 augroup SupraWaterAutoCmd
 	autocmd! 
-	autocmd VimEnter,BufEnter * if isdirectory(@%) | SupraWater.Water() | endif
+	autocmd VimEnter,BufEnter * if isdirectory(@%) | silent! SupraWater.Water() | endif
 	autocmd ColorScheme * Darken.Create_HiColor()
 augroup END
 
