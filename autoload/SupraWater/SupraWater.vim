@@ -85,7 +85,6 @@ class WaterView
 
 		inoremap <buffer><c-q>		<scriptcmd>b:SupraWaterInstance.Quit()<cr>
 		noremap <buffer><c-q>		<scriptcmd>b:SupraWaterInstance.Quit()<cr>
-		noremap <buffer>q			<scriptcmd>b:SupraWaterInstance.Quit()<cr>
 		noremap <buffer><bs>		<scriptcmd>b:SupraWaterInstance.BackFolder()<cr>
 		noremap <buffer>-			<scriptcmd>b:SupraWaterInstance.BackFolder()<cr>
 		inoremap <buffer><Cr>		<scriptcmd>b:SupraWaterInstance.SupraOverLoadCr()<cr>
