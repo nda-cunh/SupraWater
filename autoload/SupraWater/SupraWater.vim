@@ -173,16 +173,15 @@ class WaterView
 	enddef
 
 	def Quit()
-
 		# Quit if suprawater is open from a directory
 		if this.open_from_directory == true
 			quit!
 		endif
 
         if bufexists(this.previous_buf)
-            execute 'buffer! ' .. this.previous_buf
+            execute 'silent! buffer! ' .. this.previous_buf
         else
-            execute 'enew!'
+            execute 'silent! enew!'
         endif
 		this.clipboard.Clear()
     enddef
