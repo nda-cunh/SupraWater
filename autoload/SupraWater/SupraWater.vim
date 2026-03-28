@@ -841,7 +841,7 @@ class WaterView
 
 		for i in range(line('$'), 1, -1)
 			if getline(i) == ''
-				noautocmd execute ':' .. i .. 'd'
+				noautocmd deletebufline(this.buf, i)
 				for j in range(i, len(edit))
 					if has_key(edit, j)
 						edit[j] = edit[j + 1]
