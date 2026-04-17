@@ -79,8 +79,8 @@ class WaterView
 		noremap <buffer><cr>			<scriptcmd>b:SupraWaterInstance.Open()<cr>
 		nnoremap <buffer><2-LeftMouse>	<scriptcmd>b:SupraWaterInstance.Open()<cr>
 		noremap <buffer><c-t>			<scriptcmd>b:SupraWaterInstance.Open(TABNEW)<cr>
-		noremap <buffer><c-h>			<scriptcmd>b:SupraWaterInstance.Open(HSPLIT)<cr>
-		noremap <buffer><c-v>			<scriptcmd>b:SupraWaterInstance.Open(VSPLIT)<cr>
+		noremap <buffer><leader>s			<scriptcmd>b:SupraWaterInstance.Open(HSPLIT)<cr>
+		noremap <buffer><leader>v			<scriptcmd>b:SupraWaterInstance.Open(VSPLIT)<cr>
 
 
 		inoremap <buffer><c-q>		<scriptcmd>b:SupraWaterInstance.Quit()<cr>

@@ -31,13 +31,13 @@ nativement pour Vim.
 
 -   **Enter / Double clic** : Ouvrir
 -   **Ctrl-t** : Nouvel onglet
--   **Ctrl-h** : Split horizontal
--   **Ctrl-v** : Split vertical
+-   **<Leader>-h** : Split horizontal
+-   **<Leader>-v** : Split vertical
 -   **Ctrl-p** : Preview
 
 ### Navigation / Quitter
 
--   **q / Ctrl-q** : Quitter
+-   **Ctrl-q** : Quitter
 -   **Backspace / -** : Dossier parent
 -   **Alt-Up / Alt-Down** : Déplacer élément
 -   **~** : HOME

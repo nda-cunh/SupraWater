@@ -30,13 +30,13 @@ It provides an experience similar to nvim-oil, but natively for Vim.
 
 - **Enter / Double click**: Open
 - **Ctrl-t**: New tab
-- **Ctrl-h**: Horizontal split
-- **Ctrl-v**: Vertical split
+- **<Leader-h>**: Horizontal split
+- **<Leader-v>**: Vertical split
 - **Ctrl-p**: Preview
 
 ### Navigation / Quit
 
-- **q / Ctrl-q**: Quit
+- **Ctrl-q**: Quit
 - **Backspace / -**: Parent directory
 - **Alt-Up / Alt-Down**: Move item
 - **~**: HOME
