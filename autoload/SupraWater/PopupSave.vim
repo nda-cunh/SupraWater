@@ -88,23 +88,31 @@ export class PopupSave extends Popup
 		endfor
 
 		for i in modified_file.new_file
-			var new_name = i
-			if new_name[-1] == '/'
-				add(commands, 'mkdir(' .. shellescape(actual_path .. new_name) .. ')')
+			var full_path = actual_path .. i
+			
+			if i[-1] == '/'
+				add(commands, 'mkdir(' .. shellescape(full_path) .. ", 'p')")
 			else
-				add(commands, 'writefile([], ' .. shellescape(actual_path .. new_name) .. ')')
+				var parent_dir = fnamemodify(full_path, ':h')
+				add(commands, 'mkdir(' .. shellescape(parent_dir) .. ", 'p')")
+				add(commands, 'writefile([], ' .. shellescape(full_path) .. ')')
 			endif
 		endfor
 
 		for i in modified_file.rename
 			var [old_name, new_name] = split(i, ' -> ')
+			var old_full_path = actual_path .. old_name
+			var new_full_path = actual_path .. new_name
+
 			if old_name[-1] == '/'
-				old_name = fnamemodify(old_name, ':h:t')
-				new_name = fnamemodify(new_name, ':h:t')
-				add(commands, 'rename(' .. shellescape(actual_path .. old_name) .. ', ' .. shellescape(actual_path .. new_name) .. ')')
+				var new_parent = fnamemodify(new_full_path, ':h:h')
+				add(commands, 'mkdir(' .. shellescape(new_parent) .. ", 'p')")
 			else
-				add(commands, 'rename(' .. shellescape(actual_path .. old_name) .. ', ' .. shellescape(actual_path .. new_name) .. ')')
+				var new_parent = fnamemodify(new_full_path, ':h')
+				add(commands, 'mkdir(' .. shellescape(new_parent) .. ", 'p')")
 			endif
+
+			add(commands, 'rename(' .. shellescape(old_full_path) .. ', ' .. shellescape(new_full_path) .. ')')
 		endfor
 
 		extend(commands, copy_history)
