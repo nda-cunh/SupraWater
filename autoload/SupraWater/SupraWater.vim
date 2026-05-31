@@ -187,7 +187,7 @@ class WaterView
     enddef
 
 	def DrawPath(path: string)
-		this.path = substitute(path, '\/\+', '/', 'g')
+		this.path = simplify(path)
 		const lst = Read.GetCustomFileList(path)
 		noautocmd setbufline(this.buf, 1, [' ', '../'] + lst)
 		noautocmd deletebufline(this.buf, len(lst) + 3, '$')  # delete all lines in the buffer
