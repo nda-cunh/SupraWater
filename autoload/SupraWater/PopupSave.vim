@@ -123,6 +123,10 @@ export class PopupSave extends Popup
 			echom 'Executed: ' .. c
 		endfor
 
+		if exists('*g:SupraAchMetric') && len(modified_file.rename) > 0
+			call g:SupraAchMetric('suprawater_rename', len(modified_file.rename))
+		endif
+
 		clipboard.Clear()
 	enddef
 endclass
