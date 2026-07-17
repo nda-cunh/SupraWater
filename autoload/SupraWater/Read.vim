@@ -4,7 +4,7 @@ export def GetCustomFileList(path: string): list<string>
 	var patterns = []
 
 	# Fitler hidden files
-	if get(g:, 'suprawater_showhidden', false) == false
+	if get(g:, 'suprawater_show_hidden', false) == false
 		add(patterns, '^\.')
 	endif
 

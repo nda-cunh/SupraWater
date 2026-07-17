@@ -65,5 +65,5 @@ It provides an experience similar to nvim-oil, but natively for Vim.
 | g:suprawater_filter_files | [] | List of files to filter ['*.o', '*.tmp'] |
 | g:suprawater_sortascending | true | Sort ascending by default |
 | g:suprawater_show_hidden | true | Show hidden files by default |
-| g:SupraWaterForceColor | '' | Force a specific color (e.g. '#RRGGBB') |
-| g:SupraWaterDarkenAmount | 25 | Background darkening percentage |
+| g:suprawater_force_color | '' | Force a specific color (e.g. '#RRGGBB') |
+| g:suprawater_darken_amount | 25 | Background darkening percentage |

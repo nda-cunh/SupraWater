@@ -223,7 +223,7 @@ class WaterView
 			sort_text = 'Sort by name ▼ '
 		endif
 
-		if get(g:, 'suprawater_showhidden', false) == true
+		if get(g:, 'suprawater_show_hidden', false) == true
 			sort_text ..= '  | hidden files: 🗸 '
 		else
 			sort_text ..= '  | hidden files: ✕'
@@ -495,11 +495,11 @@ class WaterView
 	enddef
 
 	def ToggleShowHiddenFiles()
-		if !exists('g:suprawater_showhidden')
-			g:suprawater_showhidden = false
+		if !exists('g:suprawater_show_hidden')
+			g:suprawater_show_hidden = false
 		endif
-		var value: bool = g:suprawater_showhidden
-		g:suprawater_showhidden = !value
+		var value: bool = g:suprawater_show_hidden
+		g:suprawater_show_hidden = !value
 		this.DrawPath(this.path)
 	enddef
 

@@ -5,16 +5,16 @@ export def Create_HiColor()
 	var fgcolor = synIDattr(synIDtrans(hlID('Normal')), 'fg')
 	var darkened_bg: string
 
-	if exists('g:SupraWaterForceColor') && g:SupraWaterForceColor != ''
-		darkened_bg = g:SupraWaterForceColor
+	if exists('g:suprawater_force_color') && g:suprawater_force_color != ''
+		darkened_bg = g:suprawater_force_color
 	else
 		if bgcolor == '' || fgcolor == ''
 			bgcolor = 'NONE'
 			fgcolor = '#ABB2BF'
 			darkened_bg = bgcolor 
 		else
-			if exists('g:SupraWaterDarkenAmount')
-				darkened_bg = DarkenColor(bgcolor, g:SupraWaterDarkenAmount)
+			if exists('g:suprawater_darken_amount')
+				darkened_bg = DarkenColor(bgcolor, g:suprawater_darken_amount)
 			else
 				darkened_bg = DarkenColor(bgcolor, 15)
 			endif

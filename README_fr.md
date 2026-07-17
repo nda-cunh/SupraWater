@@ -68,5 +68,5 @@ nativement pour Vim.
 |  g:suprawater_filter_files     | []     | Liste des fichiers à filtrer  ['*.o', '*.tmp']|
 |  g:suprawater_sortascending    | true   | Tri ascendant par défaut |
 |  g:suprawater_show_hidden      | true   | Afficher les fichiers cachés par défaut |
-|  g:SupraWaterForceColor        |  ''    | Forcer une couleur spécifique (ex: '#RRGGBB') |
-|  g:SupraWaterDarkenAmount      |  25    | Pourcentage de foncé pour la couleur du fond |
+|  g:suprawater_force_color      |  ''    | Forcer une couleur spécifique (ex: '#RRGGBB') |
+|  g:suprawater_darken_amount    |  25    | Pourcentage de foncé pour la couleur du fond |

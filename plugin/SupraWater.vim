@@ -37,8 +37,8 @@ augroup END
 ## Define Signs
 ###############################
 
-if exists('g:SupraWaterSymbolSigns')
-	execute 'sign define SupraWaterSign text=' .. g:SupraWaterSymbolSigns .. ' texthl=SupraWaterErrorSign'
+if exists('g:suprawater_symbol_signs')
+	execute 'sign define SupraWaterSign text=' .. g:suprawater_symbol_signs .. ' texthl=SupraWaterErrorSign'
 else
 	execute 'sign define SupraWaterSign text=✖ texthl=SupraWaterErrorSign'
 endif
