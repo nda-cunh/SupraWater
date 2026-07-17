@@ -90,6 +90,7 @@ Editing ~
 Options ~
 	=			Toggle ascending / descending sort
 	g.			Toggle showing hidden files
+	gm			Toggle the file metadata column (size / date)
 	?			Open the help popup
 
 The global mapping `-` (open SupraWater) is defined in normal mode. If you
@@ -109,6 +110,13 @@ Show hidden (dot) files by default. >
 Sort entries in ascending order by default. >
 	let g:suprawater_sortascending = v:true
 <	Default: v:true. Toggle at runtime with `=`.
+
+						*g:suprawater_show_metadata*
+Show a right-aligned column with each entry's size and modification date.
+Directories show a dash instead of a size. The data is virtual text, so it
+never interferes with editing (renaming) a line. >
+	let g:suprawater_show_metadata = v:false
+<	Default: v:false. Toggle at runtime with `gm`.
 
 						*g:suprawater_filter_files*
 List of glob patterns to hide from the listing. >

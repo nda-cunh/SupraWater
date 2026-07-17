@@ -18,12 +18,14 @@ import autoload '../autoload/SupraWater/DarkenColor.vim' as Darken
 g:suprawater_icons_glyph_func = 'g:WebDevIconsGetFileTypeSymbol'
 g:suprawater_icons_glyph_palette_func = 'SupraIcons#Palette#Apply'
 g:suprawater_filter_files = []
-g:suprawater_show_hidden = true 
+g:suprawater_show_hidden = true
+g:suprawater_show_metadata = false
 
 nnoremap - <scriptcmd>call SupraWater.Water()<CR>
 
 hi SupraWaterPath cterm=bold guifg=#f1c058 guibg=NONE
 hi SupraWaterSort guifg=#00CAFF guibg=NONE
+hi default link SupraWaterMeta Comment
 hi link SupraWaterSign Error
 hi link SupraWaterErrorSign Error
 

@@ -58,6 +58,8 @@ nativement pour Vim.
 
 -   **g.**  : Toggle fichiers cachés
 
+-   **gm**  : Toggle métadonnées (taille / date)
+
 -   **?** : Aide
 
 ## 🔧 Configuration
@@ -68,5 +70,6 @@ nativement pour Vim.
 |  g:suprawater_filter_files     | []     | Liste des fichiers à filtrer  ['*.o', '*.tmp']|
 |  g:suprawater_sortascending    | true   | Tri ascendant par défaut |
 |  g:suprawater_show_hidden      | true   | Afficher les fichiers cachés par défaut |
+|  g:suprawater_show_metadata    | false  | Afficher taille / date dans une colonne à droite |
 |  g:suprawater_force_color      |  ''    | Forcer une couleur spécifique (ex: '#RRGGBB') |
 |  g:suprawater_darken_amount    |  25    | Pourcentage de foncé pour la couleur du fond |

@@ -1,6 +1,36 @@
 vim9script
 
-export def GetCustomFileList(path: string): list<string>
+# Human-readable file size (e.g. 4.2K, 13M). Returns '' for negative sizes.
+export def FormatSize(size: number): string
+	if size < 0
+		return ''
+	endif
+	const units = ['B', 'K', 'M', 'G', 'T']
+	var value = size * 1.0
+	var unit = 0
+	while value >= 1024.0 && unit < len(units) - 1
+		value = value / 1024.0
+		unit += 1
+	endwhile
+	if unit == 0
+		return printf('%d%s', size, units[0])
+	endif
+	return printf('%.1f%s', value, units[unit])
+enddef
+
+# Right-column metadata string for one readdirex() entry: size + date.
+# Directories have no meaningful size, so a dash is shown instead.
+export def FormatMeta(entry: dict<any>): string
+	const date = strftime('%d %b %H:%M', entry.time)
+	if entry.type == 'dir' || entry.type == 'linkd'
+		return printf('%8s  %s', '-', date)
+	endif
+	return printf('%8s  %s', FormatSize(entry.size), date)
+enddef
+
+# When {meta} is given, it is filled with a `display name -> {size, time, perm,
+# type}` entry per file, reusing the single readdirex() call below (no extra IO).
+export def GetCustomFileList(path: string, meta: dict<dict<any>> = null_dict): list<string>
 	var patterns = []
 
 	# Filter hidden files
@@ -27,10 +57,21 @@ export def GetCustomFileList(path: string): list<string>
 	var folder: list<string> = []
 	var files: list<string> = []
 	for entry in entries
+		var display_name: string
 		if entry.type == 'dir'
-			folder->add(entry.name .. '/')
+			display_name = entry.name .. '/'
+			folder->add(display_name)
 		else
-			files->add(entry.name)
+			display_name = entry.name
+			files->add(display_name)
+		endif
+		if meta isnot null_dict
+			meta[display_name] = {
+				size: entry.size,
+				time: entry.time,
+				perm: entry.perm,
+				type: entry.type,
+			}
 		endif
 	endfor
 	

@@ -7,6 +7,7 @@ g:suprawater_force_color	suprawater.txt	/*g:suprawater_force_color*
 g:suprawater_icons_glyph_func	suprawater.txt	/*g:suprawater_icons_glyph_func*
 g:suprawater_icons_glyph_palette_func	suprawater.txt	/*g:suprawater_icons_glyph_palette_func*
 g:suprawater_show_hidden	suprawater.txt	/*g:suprawater_show_hidden*
+g:suprawater_show_metadata	suprawater.txt	/*g:suprawater_show_metadata*
 g:suprawater_sortascending	suprawater.txt	/*g:suprawater_sortascending*
 g:suprawater_symbol_signs	suprawater.txt	/*g:suprawater_symbol_signs*
 suprawater	suprawater.txt	/*suprawater*

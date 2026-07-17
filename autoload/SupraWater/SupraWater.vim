@@ -38,6 +38,7 @@ class WaterView
 	var open_from_directory: bool = false
 	var clipboard: ClipBoard
 	var undostack: UndoStack
+	var metadata: dict<dict<any>> = {}  # display name -> {size, time, perm, type}
 
 	def new()
 		this.undostack = UndoStack.new()
@@ -100,6 +101,7 @@ class WaterView
 
 		nnoremap <buffer>=			<scriptcmd>b:SupraWaterInstance.ToggleAscendingSort()<cr>
 		nnoremap <buffer>g.			<scriptcmd>b:SupraWaterInstance.ToggleShowHiddenFiles()<cr>
+		nnoremap <buffer>gm			<scriptcmd>b:SupraWaterInstance.ToggleShowMetadata()<cr>
 		nnoremap <buffer>u			<scriptcmd>b:SupraWaterInstance.Undo()<cr>
 		nnoremap <buffer><c-r>		<scriptcmd>b:SupraWaterInstance.Redo()<cr>
 		nnoremap <buffer><c-p>		<scriptcmd>b:SupraWaterInstance.Preview()<cr>
@@ -188,7 +190,8 @@ class WaterView
 
 	def DrawPath(path: string)
 		this.path = simplify(path)
-		const lst = Read.GetCustomFileList(path)
+		this.metadata = {}
+		const lst = Read.GetCustomFileList(path, this.metadata)
 		noautocmd setbufline(this.buf, 1, [' ', '../'] + lst)
 		noautocmd deletebufline(this.buf, len(lst) + 3, '$')  # delete all lines in the buffer
 		setbufvar(this.buf, '&modified', 0)
@@ -270,8 +273,20 @@ class WaterView
 			var sym: string
 			var ext: string
 			const complete_path = this.path .. '/' .. result[i]
+			const is_deleted = has_key(edit, i + 1) != 0 && edit[i + 1].is_deleted == true
 
-			if has_key(edit, i + 1) != 0 && edit[i + 1].is_deleted == true
+			# Right-column metadata (size + date) for unmodified entries only:
+			# a renamed line no longer matches a cached name, so it is skipped.
+			if get(g:, 'suprawater_show_metadata', false) == true && !is_deleted && this.metadata->has_key(result[i])
+				silent! call prop_add(i + 1, 0, {
+					bufnr: buf,
+					text: Read.FormatMeta(this.metadata[result[i]]),
+					type: 'suprawatermeta',
+					text_align: 'right',
+				})
+			endif
+
+			if is_deleted
 				ext = 'DELETED'
 				sym = ''
 			elseif complete_path[-1] == '/'
@@ -501,6 +516,16 @@ class WaterView
 		var value: bool = g:suprawater_show_hidden
 		g:suprawater_show_hidden = !value
 		this.DrawPath(this.path)
+	enddef
+
+	def ToggleShowMetadata()
+		if !exists('g:suprawater_show_metadata')
+			g:suprawater_show_metadata = false
+		endif
+		var value: bool = g:suprawater_show_metadata
+		g:suprawater_show_metadata = !value
+		# Metadata is already cached, only the props need redrawing.
+		this.Actualize()
 	enddef
 
 

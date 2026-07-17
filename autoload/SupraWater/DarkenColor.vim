@@ -26,10 +26,12 @@ export def Create_HiColor()
 	prop_type_delete("suprawatersigns")
 	prop_type_delete("suprawaterpath")
 	prop_type_delete("suprawatersort")
+	prop_type_delete("suprawatermeta")
 	prop_type_add("suprawatersigns", {highlight: "SupraWaterSign"})
 	prop_type_add("suprawaterpath", {highlight: "SupraWaterPath"})
 	prop_type_add("suprawatersort", {highlight: "SupraWaterSort"})
 	prop_type_add("suprawater", {highlight: "NormalDark"})
+	prop_type_add("suprawatermeta", {highlight: "SupraWaterMeta"})
 enddef
 
 def DarkenColor(_color: string, percent: number): string
