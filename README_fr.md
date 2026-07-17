@@ -17,7 +17,7 @@ nativement pour Vim.
 - 🏠 Accès rapide au $HOME
 - 🔍 Affichage des fichiers cachés
 - 🔃 Tri ascendant / descendant
-- 🎨 Support des icônes (vim-devicons or SupraIcons)
+- 🎨 Support des icônes (vim-devicons ou SupraIcons)
 - 🧠 Popup d’aide intégrée
 
 ## ⚙️ Prérequis
@@ -31,8 +31,8 @@ nativement pour Vim.
 
 -   **Enter / Double clic** : Ouvrir
 -   **Ctrl-t** : Nouvel onglet
--   **<Leader>-h** : Split horizontal
--   **<Leader>-v** : Split vertical
+-   **<Leader>s** : Split horizontal
+-   **<Leader>v** : Split vertical
 -   **Ctrl-p** : Preview
 
 ### Navigation / Quitter

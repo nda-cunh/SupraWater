@@ -1,0 +1,185 @@
+*suprawater.txt*	Interactive file explorer for Vim 9, editable like a buffer
+
+			 🌊  SUPRAWATER  🌊
+
+Author:  nda-cunh
+License: Same terms as Vim itself (see |license|)
+
+==============================================================================
+CONTENTS					*suprawater-contents*
+
+	1. Introduction .............. |suprawater-introduction|
+	2. Requirements .............. |suprawater-requirements|
+	3. Usage ..................... |suprawater-usage|
+	4. Mappings .................. |suprawater-mappings|
+	5. Options ................... |suprawater-options|
+	6. Highlight groups .......... |suprawater-highlights|
+	7. Functions ................. |suprawater-functions|
+	8. About ..................... |suprawater-about|
+
+==============================================================================
+1. INTRODUCTION					*suprawater* *suprawater-introduction*
+
+SupraWater is an interactive file explorer for Vim 9.1, written in Vim9script.
+It provides an experience similar to nvim-oil, but natively for Vim: the
+directory is shown in an ordinary buffer that you edit directly. Renaming a
+file is renaming a line; creating a file is adding a line; deleting a file is
+deleting a line. Changes are staged and applied when you save the buffer.
+
+Features:
+	- File system navigation
+	- Direct editing of paths/files in the buffer
+	- Open in split / vsplit / tab
+	- File preview
+	- Undo / Redo of pending actions
+	- Copy / Paste
+	- Quick access to $HOME
+	- Show / hide hidden files
+	- Ascending / descending sort
+	- Icon support (vim-devicons or SupraIcons)
+	- Built-in help popup
+
+==============================================================================
+2. REQUIREMENTS					*suprawater-requirements*
+
+	- Vim 9.1 or newer
+	- (Optional) SupraIcons or vim-devicons for file icons
+
+==============================================================================
+3. USAGE					*suprawater-usage*
+
+Press >
+	-
+<in normal mode to open SupraWater in the current file's directory. This is
+the default global mapping installed by the plugin.
+
+SupraWater also opens automatically when you edit a directory (for example
+`vim .` or `:edit somedir/`), replacing the default |netrw| listing.
+
+Inside a SupraWater buffer you edit the listing like any other buffer. Nothing
+touches the file system until you write the buffer with |:write| (or press
+CTRL-S). Pending actions can be reviewed and undone before saving.
+
+==============================================================================
+4. MAPPINGS					*suprawater-mappings*
+
+These buffer-local mappings are active inside a SupraWater buffer.
+
+Opening ~
+	<CR>, double-click	Open item under cursor
+	CTRL-T			Open in a new tab
+	<Leader>s		Open in a horizontal split
+	<Leader>v		Open in a vertical split
+	CTRL-P			Preview item under cursor
+
+Navigation / quit ~
+	<BS>, -			Go to parent directory
+	~			Go to $HOME
+	_			Go to the first (top) path
+	<A-Up>, <A-Down>	Move the item up / down
+	CTRL-Q			Quit SupraWater
+
+Editing ~
+	CTRL-S			Save (apply pending changes)
+	p			Paste
+	dw, db			Delete word
+	yw, yb			Yank word
+	u			Undo pending action
+	CTRL-R			Redo pending action
+
+Options ~
+	=			Toggle ascending / descending sort
+	g.			Toggle showing hidden files
+	?			Open the help popup
+
+The global mapping `-` (open SupraWater) is defined in normal mode. If you
+already use `-` for something else, remap SupraWater.Water() to your liking.
+
+==============================================================================
+5. OPTIONS					*suprawater-options*
+
+Set these global variables in your |vimrc| before or after the plugin loads.
+
+						*g:suprawater_show_hidden*
+Show hidden (dot) files by default. >
+	let g:suprawater_show_hidden = v:true
+<	Default: v:true. Toggle at runtime with `g.`.
+
+						*g:suprawater_sortascending*
+Sort entries in ascending order by default. >
+	let g:suprawater_sortascending = v:true
+<	Default: v:true. Toggle at runtime with `=`.
+
+						*g:suprawater_filter_files*
+List of glob patterns to hide from the listing. >
+	let g:suprawater_filter_files = ['*.o', '*.tmp']
+<	Default: [] (nothing filtered).
+
+						*g:suprawater_icons_glyph_func*
+Name of the function used to obtain a file-type icon. >
+	let g:suprawater_icons_glyph_func = 'g:WebDevIconsGetFileTypeSymbol'
+<	Default: 'g:WebDevIconsGetFileTypeSymbol'.
+
+					*g:suprawater_icons_glyph_palette_func*
+Name of the function used to color the icons. >
+	let g:suprawater_icons_glyph_palette_func = 'SupraIcons#Palette#Apply'
+<	Default: 'SupraIcons#Palette#Apply'.
+
+						*g:suprawater_force_color*
+Force a specific background color for the SupraWater window instead of
+deriving one from the current colorscheme. >
+	let g:suprawater_force_color = '#1c1c1c'
+<	Default: '' (derive from colorscheme).
+
+						*g:suprawater_darken_amount*
+Percentage by which the derived background is darkened. Ignored when
+|g:suprawater_force_color| is set. >
+	let g:suprawater_darken_amount = 25
+<	Default: 25.
+
+						*g:suprawater_symbol_signs*
+Sign text used to flag entries with a pending error. >
+	let g:suprawater_symbol_signs = '✖'
+<	Default: '✖'.
+
+==============================================================================
+6. HIGHLIGHT GROUPS				*suprawater-highlights*
+
+SupraWater defines these highlight groups; override them after your
+colorscheme loads to customize appearance.
+
+	SupraWaterPath		The path header line
+	SupraWaterSort		The sort indicator
+	SupraWaterSign		Sign for a flagged entry (linked to Error)
+	SupraWaterErrorSign	Highlight of the error sign (linked to Error)
+
+Example: >
+	hi SupraWaterPath cterm=bold guifg=#f1c058 guibg=NONE
+<
+==============================================================================
+7. FUNCTIONS					*suprawater-functions*
+
+The plugin exposes a few global helper functions.
+
+					*SupraCopyFile()*
+SupraCopyFile({src}, {dest})
+		Copy a single file from {src} to {dest}, creating the parent
+		directory and preserving file permissions.
+
+					*SupraCopyDir()*
+SupraCopyDir({src}, {dest})
+		Recursively copy the directory {src} to {dest}. Implemented
+		natively (no shell), so it is cross-platform and injection
+		safe, and preserves permissions.
+
+					*SupraMakeTempDir()*
+SupraMakeTempDir()
+		Create and return the path of a fresh temporary directory.
+
+==============================================================================
+8. ABOUT					*suprawater-about*
+
+SupraWater is written in Vim9script and targets Vim 9.1+.
+Source and issue tracker: the SupraWater repository.
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

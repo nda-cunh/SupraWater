@@ -30,8 +30,8 @@ It provides an experience similar to nvim-oil, but natively for Vim.
 
 - **Enter / Double click**: Open
 - **Ctrl-t**: New tab
-- **<Leader-h>**: Horizontal split
-- **<Leader-v>**: Vertical split
+- **<Leader>s**: Horizontal split
+- **<Leader>v**: Vertical split
 - **Ctrl-p**: Preview
 
 ### Navigation / Quit
