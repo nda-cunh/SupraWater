@@ -3,7 +3,7 @@ vim9script
 export def GetCustomFileList(path: string): list<string>
 	var patterns = []
 
-	# Fitler hidden files
+	# Filter hidden files
 	if get(g:, 'suprawater_show_hidden', false) == false
 		add(patterns, '^\.')
 	endif
@@ -26,11 +26,11 @@ export def GetCustomFileList(path: string): list<string>
 
 	var folder: list<string> = []
 	var files: list<string> = []
-	for entrie in entries
-		if entrie.type == 'dir'
-			folder->add(entrie.name .. '/')
+	for entry in entries
+		if entry.type == 'dir'
+			folder->add(entry.name .. '/')
 		else
-			files->add(entrie.name)
+			files->add(entry.name)
 		endif
 	endfor
 	
