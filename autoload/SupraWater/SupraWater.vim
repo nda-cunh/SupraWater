@@ -41,6 +41,11 @@ class WaterView
 	var metadata: dict<dict<any>> = {}  # display name -> {size, time, perm, type}
 
 	def new()
+		var target_buf = bufnr('%')
+		if getbufvar(target_buf, '&buftype') != ''
+			return
+		endif
+
 		this.undostack = UndoStack.new()
 		this.clipboard = ClipBoard.new()
 		this.previous_buf = bufnr('%')
