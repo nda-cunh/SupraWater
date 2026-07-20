@@ -41,8 +41,8 @@ class WaterView
 	var metadata: dict<dict<any>> = {}  # display name -> {size, time, perm, type}
 
 	def new()
-		var target_buf = bufnr('%')
-		if getbufvar(target_buf, '&buftype') != ''
+		const target_buf = bufnr('%')
+		if empty(getbufvar(target_buf, '&buftype')) == 0
 			return
 		endif
 
